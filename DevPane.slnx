@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DevPane.Integrations/DevPane.Integrations.csproj" />
+    <Project Path="src/DevPane.Widgets/DevPane.Widgets.csproj" />
+  </Folder>
+</Solution>

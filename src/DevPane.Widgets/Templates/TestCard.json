@@ -1,0 +1,53 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            { "type": "TextBlock", "text": "CPU", "size": "small", "isSubtle": true },
+            { "type": "TextBlock", "text": "${cpu}%", "size": "extraLarge", "weight": "bolder", "spacing": "none" }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            { "type": "TextBlock", "text": "RAM", "size": "small", "isSubtle": true },
+            { "type": "TextBlock", "text": "${ram}%", "size": "extraLarge", "weight": "bolder", "spacing": "none" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Image",
+      "$when": "${size != 'small'}",
+      "url": "${sparkline}",
+      "altText": "CPU usage over the last minute",
+      "size": "stretch"
+    },
+    {
+      "type": "TextBlock",
+      "$when": "${size != 'small'}",
+      "text": "Updates received: ${updates} · last at ${time}",
+      "size": "small",
+      "isSubtle": true,
+      "wrap": true
+    },
+    {
+      "type": "TextBlock",
+      "$when": "${size == 'large'}",
+      "text": "Button clicks (saved across restarts): ${clicks}",
+      "size": "small",
+      "wrap": true
+    }
+  ],
+  "actions": [
+    { "type": "Action.Execute", "title": "Click me", "verb": "increment" }
+  ]
+}
