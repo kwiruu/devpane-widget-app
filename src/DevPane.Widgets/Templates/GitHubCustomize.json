@@ -1,0 +1,47 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "Container",
+      "minHeight": "6px",
+      "items": []
+    },
+    { "type": "TextBlock", "text": "Show pull requests, issues, and runs from", "weight": "bolder", "wrap": true },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "repo",
+      "style": "compact",
+      "value": "${selected}",
+      "choices": [
+        { "title": "All repositories", "value": "all" },
+        { "$data": "${repos}", "title": "${name}", "value": "${name}" }
+      ]
+    },
+    {
+      "type": "Input.Text",
+      "id": "typedRepo",
+      "label": "Or type a repository",
+      "placeholder": "owner/name",
+      "value": "${typed}"
+    },
+    { "type": "TextBlock", "$when": "${error != ''}", "text": "${error}", "color": "attention", "size": "small", "wrap": true },
+    {
+      "type": "Container",
+      "$when": "${login != ''}",
+      "spacing": "large",
+      "items": [
+        { "type": "TextBlock", "text": "Signed in as ${login}", "size": "small", "isSubtle": true },
+        {
+          "type": "ActionSet",
+          "actions": [ { "type": "Action.Execute", "title": "Sign out of GitHub", "verb": "signOut" } ]
+        }
+      ]
+    }
+  ],
+  "actions": [
+    { "type": "Action.Execute", "title": "Save", "verb": "saveCustomization" },
+    { "type": "Action.Execute", "title": "Cancel", "verb": "cancelCustomization" }
+  ]
+}

@@ -1,6 +1,16 @@
 <Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="ARM64" />
+  </Configurations>
   <Folder Name="/src/">
-    <Project Path="src/DevPane.Integrations/DevPane.Integrations.csproj" />
-    <Project Path="src/DevPane.Widgets/DevPane.Widgets.csproj" />
+    <Project Path="src/DevPane.Integrations/DevPane.Integrations.csproj">
+      <Platform Project="Any CPU" />
+    </Project>
+    <Project Path="src/DevPane.Widgets/DevPane.Widgets.csproj">
+      <Platform Solution="*|x64" Project="x64" />
+      <Platform Solution="*|ARM64" Project="ARM64" />
+      <Deploy />
+    </Project>
   </Folder>
 </Solution>

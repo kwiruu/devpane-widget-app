@@ -1,0 +1,83 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "Container",
+      "minHeight": "6px",
+      "items": []
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            { "type": "TextBlock", "text": "CPU", "size": "small", "isSubtle": true },
+            { "type": "TextBlock", "text": "${cpu}", "size": "${valueSize}", "weight": "bolder", "spacing": "none" },
+            { "type": "Image", "url": "${cpuGraph}", "altText": "CPU usage over time", "size": "stretch", "spacing": "small" },
+            { "type": "TextBlock", "$when": "${size != 'small'}", "text": "${cpuDetail}", "size": "small", "isSubtle": true, "spacing": "none" }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            { "type": "TextBlock", "text": "${ramLabel}", "size": "small", "isSubtle": true },
+            { "type": "TextBlock", "text": "${ram}", "size": "${valueSize}", "weight": "bolder", "spacing": "none" },
+            { "type": "Image", "url": "${ramGraph}", "altText": "Memory usage over time", "size": "stretch", "spacing": "small" },
+            { "type": "TextBlock", "$when": "${size != 'small'}", "text": "${ramDetail}", "size": "small", "isSubtle": true, "spacing": "none" }
+          ]
+        },
+        {
+          "type": "Column",
+          "$when": "${hasGpu}",
+          "width": "stretch",
+          "items": [
+            { "type": "TextBlock", "text": "GPU", "size": "small", "isSubtle": true },
+            { "type": "TextBlock", "text": "${gpu}", "size": "${valueSize}", "weight": "bolder", "spacing": "none" },
+            { "type": "Image", "url": "${gpuGraph}", "altText": "GPU usage over time", "size": "stretch", "spacing": "small" },
+            { "type": "TextBlock", "$when": "${size != 'small'}", "text": "${gpuDetail}", "size": "small", "isSubtle": true, "spacing": "none" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ColumnSet",
+      "$when": "${size != 'small'}",
+      "spacing": "large",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            { "type": "TextBlock", "text": "Disk (MB/s)", "size": "small", "isSubtle": true },
+            { "type": "TextBlock", "text": "${disk}", "size": "${valueSize}", "weight": "bolder", "spacing": "none" },
+            { "type": "Image", "url": "${diskGraph}", "altText": "Disk activity over time", "size": "stretch", "spacing": "small" },
+            { "type": "TextBlock", "text": "${diskDetail}", "size": "small", "isSubtle": true, "spacing": "none" }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            { "type": "TextBlock", "text": "Down (Mbps)", "size": "small", "isSubtle": true },
+            { "type": "TextBlock", "text": "${download}", "size": "${valueSize}", "weight": "bolder", "spacing": "none" },
+            { "type": "Image", "url": "${downloadGraph}", "altText": "Download speed over time", "size": "stretch", "spacing": "small" }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            { "type": "TextBlock", "text": "Up (Mbps)", "size": "small", "isSubtle": true },
+            { "type": "TextBlock", "text": "${upload}", "size": "${valueSize}", "weight": "bolder", "spacing": "none" },
+            { "type": "Image", "url": "${uploadGraph}", "altText": "Upload speed over time", "size": "stretch", "spacing": "small" }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Providers;
 
 namespace DevPane.Widgets.Cards;
@@ -44,6 +45,11 @@ internal abstract class CardBase : IDisposable
     public virtual void Deactivate() => IsActive = false;
 
     public virtual void OnAction(string verb, string data)
+    {
+    }
+
+    /// <summary>The user chose Customize from the card's menu. Only called for definitions marked IsCustomizable.</summary>
+    public virtual void OnCustomizationRequested()
     {
     }
 

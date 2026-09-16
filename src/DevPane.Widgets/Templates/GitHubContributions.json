@@ -1,0 +1,161 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "Container",
+      "$when": "${size != 'small' || state != 'signedIn'}",
+      "minHeight": "14px",
+      "items": []
+    },
+    {
+      "type": "Container",
+      "$when": "${size == 'small' && state == 'signedIn'}",
+      "minHeight": "6px",
+      "items": []
+    },
+    {
+      "type": "Container",
+      "$when": "${state == 'signedOut'}",
+      "minHeight": "${centerHeight}",
+      "verticalContentAlignment": "center",
+      "items": [
+        { "type": "Image", "url": "${mark}", "width": "${markSize}", "horizontalAlignment": "center", "altText": "GitHub" },
+        { "type": "TextBlock", "text": "Connect GitHub", "size": "${titleSize}", "weight": "bolder", "horizontalAlignment": "center", "spacing": "medium" },
+        { "type": "TextBlock", "$when": "${size != 'small'}", "text": "See your contribution calendar and streaks.", "size": "small", "isSubtle": true, "wrap": true, "horizontalAlignment": "center", "spacing": "small" },
+        { "type": "TextBlock", "$when": "${notice != ''}", "text": "${notice}", "size": "small", "color": "attention", "wrap": true, "horizontalAlignment": "center", "spacing": "small" },
+        {
+          "type": "ColumnSet",
+          "spacing": "large",
+          "selectAction": { "type": "Action.Execute", "verb": "signIn", "title": "Sign in with GitHub" },
+          "columns": [
+            { "type": "Column", "width": "6px", "minHeight": "36px", "backgroundImage": { "url": "${buttonLeft}", "fillMode": "cover" }, "items": [] },
+            {
+              "type": "Column", "width": "stretch", "spacing": "none", "minHeight": "36px", "verticalContentAlignment": "center",
+              "backgroundImage": { "url": "${buttonFill}", "fillMode": "cover" },
+              "items": [ { "type": "TextBlock", "text": "Sign in with GitHub", "weight": "bolder", "color": "light", "horizontalAlignment": "center" } ]
+            },
+            { "type": "Column", "width": "6px", "spacing": "none", "minHeight": "36px", "backgroundImage": { "url": "${buttonRight}", "fillMode": "cover" }, "items": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "$when": "${state == 'waiting'}",
+      "minHeight": "${centerHeight}",
+      "verticalContentAlignment": "center",
+      "items": [
+        { "type": "Image", "url": "${mark}", "width": "${markSize}", "horizontalAlignment": "center", "altText": "GitHub" },
+        { "type": "TextBlock", "text": "Authorize Dev Pane", "weight": "bolder", "horizontalAlignment": "center", "spacing": "small" },
+        {
+          "type": "ColumnSet",
+          "$when": "${size != 'small'}",
+          "spacing": "medium",
+          "horizontalAlignment": "center",
+          "columns": [
+            { "type": "Column", "width": "28px", "minHeight": "38px", "verticalContentAlignment": "center", "backgroundImage": { "url": "${codeBox}", "fillMode": "cover" }, "items": [ { "type": "TextBlock", "text": "${code0}", "fontType": "monospace", "weight": "bolder", "horizontalAlignment": "center" } ] },
+            { "type": "Column", "width": "28px", "spacing": "small", "minHeight": "38px", "verticalContentAlignment": "center", "backgroundImage": { "url": "${codeBox}", "fillMode": "cover" }, "items": [ { "type": "TextBlock", "text": "${code1}", "fontType": "monospace", "weight": "bolder", "horizontalAlignment": "center" } ] },
+            { "type": "Column", "width": "28px", "spacing": "small", "minHeight": "38px", "verticalContentAlignment": "center", "backgroundImage": { "url": "${codeBox}", "fillMode": "cover" }, "items": [ { "type": "TextBlock", "text": "${code2}", "fontType": "monospace", "weight": "bolder", "horizontalAlignment": "center" } ] },
+            { "type": "Column", "width": "28px", "spacing": "small", "minHeight": "38px", "verticalContentAlignment": "center", "backgroundImage": { "url": "${codeBox}", "fillMode": "cover" }, "items": [ { "type": "TextBlock", "text": "${code3}", "fontType": "monospace", "weight": "bolder", "horizontalAlignment": "center" } ] },
+            { "type": "Column", "width": "12px", "spacing": "small", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "-", "isSubtle": true, "horizontalAlignment": "center" } ] },
+            { "type": "Column", "width": "28px", "spacing": "small", "minHeight": "38px", "verticalContentAlignment": "center", "backgroundImage": { "url": "${codeBox}", "fillMode": "cover" }, "items": [ { "type": "TextBlock", "text": "${code4}", "fontType": "monospace", "weight": "bolder", "horizontalAlignment": "center" } ] },
+            { "type": "Column", "width": "28px", "spacing": "small", "spacing": "small", "minHeight": "38px", "verticalContentAlignment": "center", "backgroundImage": { "url": "${codeBox}", "fillMode": "cover" }, "items": [ { "type": "TextBlock", "text": "${code5}", "fontType": "monospace", "weight": "bolder", "horizontalAlignment": "center" } ] },
+            { "type": "Column", "width": "28px", "spacing": "small", "spacing": "small", "minHeight": "38px", "verticalContentAlignment": "center", "backgroundImage": { "url": "${codeBox}", "fillMode": "cover" }, "items": [ { "type": "TextBlock", "text": "${code6}", "fontType": "monospace", "weight": "bolder", "horizontalAlignment": "center" } ] },
+            { "type": "Column", "width": "28px", "spacing": "small", "spacing": "small", "minHeight": "38px", "verticalContentAlignment": "center", "backgroundImage": { "url": "${codeBox}", "fillMode": "cover" }, "items": [ { "type": "TextBlock", "text": "${code7}", "fontType": "monospace", "weight": "bolder", "horizontalAlignment": "center" } ] }
+          ]
+        },
+        { "type": "TextBlock", "$when": "${size == 'small'}", "text": "${userCode}", "fontType": "monospace", "weight": "bolder", "horizontalAlignment": "center", "spacing": "small" },
+        { "type": "TextBlock", "$when": "${size != 'small'}", "text": "Enter this code on GitHub before ${expiresAt}.", "size": "small", "isSubtle": true, "wrap": true, "horizontalAlignment": "center", "spacing": "small" },
+        {
+          "type": "ColumnSet",
+          "spacing": "medium",
+          "selectAction": { "type": "Action.OpenUrl", "url": "${verificationUrl}", "title": "Open GitHub" },
+          "columns": [
+            { "type": "Column", "width": "6px", "minHeight": "36px", "backgroundImage": { "url": "${buttonLeft}", "fillMode": "cover" }, "items": [] },
+            {
+              "type": "Column", "width": "stretch", "spacing": "none", "minHeight": "36px", "verticalContentAlignment": "center",
+              "backgroundImage": { "url": "${buttonFill}", "fillMode": "cover" },
+              "items": [ { "type": "TextBlock", "text": "Open GitHub", "weight": "bolder", "color": "light", "horizontalAlignment": "center" } ]
+            },
+            { "type": "Column", "width": "6px", "spacing": "none", "minHeight": "36px", "backgroundImage": { "url": "${buttonRight}", "fillMode": "cover" }, "items": [] }
+          ]
+        },
+        {
+          "type": "Container",
+          "spacing": "small",
+          "selectAction": { "type": "Action.Execute", "verb": "cancelSignIn", "title": "Cancel sign-in" },
+          "items": [
+            { "type": "TextBlock", "text": "Cancel", "size": "small", "isSubtle": true, "horizontalAlignment": "center" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "$when": "${state == 'signedIn'}",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "$when": "${size != 'small'}",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                { "type": "TextBlock", "text": "Past year", "size": "small", "isSubtle": true, "wrap": true, "maxLines": 1 },
+                { "type": "TextBlock", "text": "${total}", "size": "${valueSize}", "weight": "bolder", "spacing": "none" }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                { "type": "TextBlock", "text": "Streak (days)", "size": "small", "isSubtle": true, "wrap": true, "maxLines": 1 },
+                { "type": "TextBlock", "text": "${streak}", "size": "${valueSize}", "weight": "bolder", "spacing": "none" }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "stretch",
+              "items": [
+                { "type": "TextBlock", "text": "Longest (days)", "size": "small", "isSubtle": true, "wrap": true, "maxLines": 1 },
+                { "type": "TextBlock", "text": "${longest}", "size": "${valueSize}", "weight": "bolder", "spacing": "none" }
+              ]
+            }
+          ]
+        },
+        { "type": "TextBlock", "$when": "${hasCalendar && gridCaption != ''}", "text": "${gridCaption}", "size": "small", "isSubtle": true, "spacing": "large" },
+        {
+          "type": "Image",
+          "$when": "${hasCalendar && size == 'large'}",
+          "url": "${olderGrid}",
+          "altText": "Contribution calendar, earlier half of the year",
+          "size": "stretch",
+          "spacing": "small",
+          "selectAction": { "type": "Action.OpenUrl", "url": "${profileUrl}", "title": "Open your GitHub profile" }
+        },
+        {
+          "type": "Image",
+          "$when": "${hasCalendar}",
+          "url": "${grid}",
+          "altText": "Contribution calendar, recent weeks",
+          "size": "stretch",
+          "spacing": "${gridSpacing}",
+          "selectAction": { "type": "Action.OpenUrl", "url": "${profileUrl}", "title": "Open your GitHub profile" }
+        },
+        {
+          "type": "ColumnSet",
+          "$when": "${size != 'small'}",
+          "spacing": "medium",
+          "selectAction": { "type": "Action.Execute", "verb": "refresh", "title": "Refresh" },
+          "columns": [
+            { "type": "Column", "width": "stretch", "items": [ { "type": "TextBlock", "text": "${footer}", "size": "small", "isSubtle": true, "wrap": true, "maxLines": 1 } ] },
+            { "type": "Column", "width": "auto", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "↻", "size": "small", "isSubtle": true } ] }
+          ]
+        }
+      ]
+    }
+  ]
+}

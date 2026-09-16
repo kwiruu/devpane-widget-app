@@ -6,7 +6,7 @@ namespace DevPane.Widgets;
 /// <summary>
 /// The object the Widgets Board talks to. Each call is routed to the card that owns the widget ID.
 /// </summary>
-internal sealed partial class WidgetProvider : IWidgetProvider
+internal sealed partial class WidgetProvider : IWidgetProvider, IWidgetProvider2
 {
     /// <summary>
     /// COM class ID. Must match both <c>com:Class Id</c> and <c>CreateInstance ClassId</c> in Package.appxmanifest.
@@ -57,12 +57,16 @@ internal sealed partial class WidgetProvider : IWidgetProvider
             return;
         }
 
+        CardBase? previous;
         lock (Gate)
         {
+            // The constructor's restore pass may already hold a card for this ID.
+            Cards.Remove(widgetContext.Id, out previous);
             Cards[widgetContext.Id] = card;
             NoCardsLeftEvent.Reset();
         }
 
+        previous?.Dispose();
         Log.Info($"Pinned {widgetContext.DefinitionId} ({widgetContext.Id}), size {widgetContext.Size}");
         card.Push(includeTemplate: true);
     });
@@ -93,6 +97,9 @@ internal sealed partial class WidgetProvider : IWidgetProvider
 
     public void OnWidgetContextChanged(WidgetContextChangedArgs contextChangedArgs) => Guard(nameof(OnWidgetContextChanged), () =>
         Find(contextChangedArgs.WidgetContext.Id)?.OnContextChanged(contextChangedArgs.WidgetContext));
+
+    public void OnCustomizationRequested(WidgetCustomizationRequestedArgs customizationRequestedArgs) => Guard(nameof(OnCustomizationRequested), () =>
+        Find(customizationRequestedArgs.WidgetContext.Id)?.OnCustomizationRequested());
 
     private static CardBase? Find(string widgetId)
     {

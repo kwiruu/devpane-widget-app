@@ -1,0 +1,207 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "Container",
+      "minHeight": "14px",
+      "items": []
+    },
+    {
+      "type": "Container",
+      "$when": "${state == 'signedOut'}",
+      "minHeight": "${centerHeight}",
+      "verticalContentAlignment": "center",
+      "items": [
+        { "type": "Image", "url": "${mark}", "width": "${markSize}", "horizontalAlignment": "center", "altText": "GitHub" },
+        { "type": "TextBlock", "text": "Connect GitHub", "size": "${titleSize}", "weight": "bolder", "horizontalAlignment": "center", "spacing": "medium" },
+        { "type": "TextBlock", "$when": "${size != 'small'}", "text": "See pull requests, issues, and workflow runs.", "size": "small", "isSubtle": true, "wrap": true, "horizontalAlignment": "center", "spacing": "small" },
+        { "type": "TextBlock", "$when": "${notice != ''}", "text": "${notice}", "size": "small", "color": "attention", "wrap": true, "horizontalAlignment": "center", "spacing": "small" },
+        {
+          "type": "ColumnSet",
+          "spacing": "large",
+          "selectAction": { "type": "Action.Execute", "verb": "signIn", "title": "Sign in with GitHub" },
+          "columns": [
+            { "type": "Column", "width": "6px", "minHeight": "36px", "backgroundImage": { "url": "${buttonLeft}", "fillMode": "cover" }, "items": [] },
+            {
+              "type": "Column", "width": "stretch", "spacing": "none", "minHeight": "36px", "verticalContentAlignment": "center",
+              "backgroundImage": { "url": "${buttonFill}", "fillMode": "cover" },
+              "items": [ { "type": "TextBlock", "text": "Sign in with GitHub", "weight": "bolder", "color": "light", "horizontalAlignment": "center" } ]
+            },
+            { "type": "Column", "width": "6px", "spacing": "none", "minHeight": "36px", "backgroundImage": { "url": "${buttonRight}", "fillMode": "cover" }, "items": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "$when": "${state == 'waiting'}",
+      "minHeight": "${centerHeight}",
+      "verticalContentAlignment": "center",
+      "items": [
+        { "type": "Image", "url": "${mark}", "width": "${markSize}", "horizontalAlignment": "center", "altText": "GitHub" },
+        { "type": "TextBlock", "text": "Authorize Dev Pane", "weight": "bolder", "horizontalAlignment": "center", "spacing": "small" },
+        {
+          "type": "ColumnSet",
+          "$when": "${size != 'small'}",
+          "spacing": "medium",
+          "horizontalAlignment": "center",
+          "columns": [
+            { "type": "Column", "width": "28px", "minHeight": "38px", "verticalContentAlignment": "center", "backgroundImage": { "url": "${codeBox}", "fillMode": "cover" }, "items": [ { "type": "TextBlock", "text": "${code0}", "fontType": "monospace", "weight": "bolder", "horizontalAlignment": "center" } ] },
+            { "type": "Column", "width": "28px", "spacing": "small", "minHeight": "38px", "verticalContentAlignment": "center", "backgroundImage": { "url": "${codeBox}", "fillMode": "cover" }, "items": [ { "type": "TextBlock", "text": "${code1}", "fontType": "monospace", "weight": "bolder", "horizontalAlignment": "center" } ] },
+            { "type": "Column", "width": "28px", "spacing": "small", "minHeight": "38px", "verticalContentAlignment": "center", "backgroundImage": { "url": "${codeBox}", "fillMode": "cover" }, "items": [ { "type": "TextBlock", "text": "${code2}", "fontType": "monospace", "weight": "bolder", "horizontalAlignment": "center" } ] },
+            { "type": "Column", "width": "28px", "spacing": "small", "minHeight": "38px", "verticalContentAlignment": "center", "backgroundImage": { "url": "${codeBox}", "fillMode": "cover" }, "items": [ { "type": "TextBlock", "text": "${code3}", "fontType": "monospace", "weight": "bolder", "horizontalAlignment": "center" } ] },
+            { "type": "Column", "width": "12px", "spacing": "small", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "-", "isSubtle": true, "horizontalAlignment": "center" } ] },
+            { "type": "Column", "width": "28px", "spacing": "small", "minHeight": "38px", "verticalContentAlignment": "center", "backgroundImage": { "url": "${codeBox}", "fillMode": "cover" }, "items": [ { "type": "TextBlock", "text": "${code4}", "fontType": "monospace", "weight": "bolder", "horizontalAlignment": "center" } ] },
+            { "type": "Column", "width": "28px", "spacing": "small", "spacing": "small", "minHeight": "38px", "verticalContentAlignment": "center", "backgroundImage": { "url": "${codeBox}", "fillMode": "cover" }, "items": [ { "type": "TextBlock", "text": "${code5}", "fontType": "monospace", "weight": "bolder", "horizontalAlignment": "center" } ] },
+            { "type": "Column", "width": "28px", "spacing": "small", "spacing": "small", "minHeight": "38px", "verticalContentAlignment": "center", "backgroundImage": { "url": "${codeBox}", "fillMode": "cover" }, "items": [ { "type": "TextBlock", "text": "${code6}", "fontType": "monospace", "weight": "bolder", "horizontalAlignment": "center" } ] },
+            { "type": "Column", "width": "28px", "spacing": "small", "spacing": "small", "minHeight": "38px", "verticalContentAlignment": "center", "backgroundImage": { "url": "${codeBox}", "fillMode": "cover" }, "items": [ { "type": "TextBlock", "text": "${code7}", "fontType": "monospace", "weight": "bolder", "horizontalAlignment": "center" } ] }
+          ]
+        },
+        { "type": "TextBlock", "$when": "${size == 'small'}", "text": "${userCode}", "fontType": "monospace", "weight": "bolder", "horizontalAlignment": "center", "spacing": "small" },
+        { "type": "TextBlock", "$when": "${size != 'small'}", "text": "Enter this code on GitHub before ${expiresAt}.", "size": "small", "isSubtle": true, "wrap": true, "horizontalAlignment": "center", "spacing": "small" },
+        {
+          "type": "ColumnSet",
+          "spacing": "medium",
+          "selectAction": { "type": "Action.OpenUrl", "url": "${verificationUrl}", "title": "Open GitHub" },
+          "columns": [
+            { "type": "Column", "width": "6px", "minHeight": "36px", "backgroundImage": { "url": "${buttonLeft}", "fillMode": "cover" }, "items": [] },
+            {
+              "type": "Column", "width": "stretch", "spacing": "none", "minHeight": "36px", "verticalContentAlignment": "center",
+              "backgroundImage": { "url": "${buttonFill}", "fillMode": "cover" },
+              "items": [ { "type": "TextBlock", "text": "Open GitHub", "weight": "bolder", "color": "light", "horizontalAlignment": "center" } ]
+            },
+            { "type": "Column", "width": "6px", "spacing": "none", "minHeight": "36px", "backgroundImage": { "url": "${buttonRight}", "fillMode": "cover" }, "items": [] }
+          ]
+        },
+        {
+          "type": "Container",
+          "spacing": "small",
+          "selectAction": { "type": "Action.Execute", "verb": "cancelSignIn", "title": "Cancel sign-in" },
+          "items": [
+            { "type": "TextBlock", "text": "Cancel", "size": "small", "isSubtle": true, "horizontalAlignment": "center" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "$when": "${state == 'signedIn'}",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "$data": "${tiles}",
+              "width": "stretch",
+              "spacing": "small",
+              "selectAction": { "type": "Action.OpenUrl", "url": "${url}", "title": "${linkTitle}" },
+              "items": [
+                {
+                  "type": "ColumnSet",
+                  "columns": [
+                    { "type": "Column", "width": "8px", "minHeight": "${height}", "backgroundImage": { "url": "${left}", "fillMode": "cover" }, "items": [] },
+                    {
+                      "type": "Column", "width": "stretch", "spacing": "none", "minHeight": "${height}", "verticalContentAlignment": "center",
+                      "backgroundImage": { "url": "${fill}", "fillMode": "cover" },
+                      "items": [
+                        {
+                          "type": "ColumnSet",
+                          "columns": [
+                            { "type": "Column", "width": "auto", "verticalContentAlignment": "center", "items": [ { "type": "Image", "url": "${icon}", "width": "14px", "height": "14px", "altText": "" } ] },
+                            { "type": "Column", "width": "stretch", "spacing": "small", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "${label}", "size": "small", "isSubtle": true, "maxLines": 1 } ] }
+                          ]
+                        },
+                        {
+                          "type": "ColumnSet",
+                          "spacing": "none",
+                          "columns": [
+                            { "type": "Column", "width": "auto", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "${count}", "size": "${valueSize}", "weight": "bolder" } ] },
+                            { "type": "Column", "$when": "${badge != ''}", "width": "auto", "spacing": "small", "verticalContentAlignment": "center", "items": [ { "type": "Image", "url": "${badge}", "width": "14px", "height": "14px", "altText": "${badgeText}" } ] }
+                          ]
+                        }
+                      ]
+                    },
+                    { "type": "Column", "width": "8px", "spacing": "none", "minHeight": "${height}", "backgroundImage": { "url": "${right}", "fillMode": "cover" }, "items": [] }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Container",
+          "$data": "${sections}",
+          "spacing": "medium",
+          "items": [
+            {
+              "type": "ColumnSet",
+              "columns": [
+                { "type": "Column", "width": "auto", "verticalContentAlignment": "center", "items": [ { "type": "Image", "url": "${icon}", "width": "16px", "height": "16px", "altText": "" } ] },
+                { "type": "Column", "width": "auto", "spacing": "small", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "${title}", "size": "small", "weight": "bolder", "maxLines": 1 } ] },
+                {
+                  "type": "Column", "$when": "${count != ''}", "width": "auto", "spacing": "small", "verticalContentAlignment": "center",
+                  "items": [
+                    {
+                      "type": "ColumnSet",
+                      "columns": [
+                        { "type": "Column", "width": "10px", "minHeight": "20px", "backgroundImage": { "url": "${countLeft}", "fillMode": "cover" }, "items": [] },
+                        { "type": "Column", "width": "auto", "spacing": "none", "minHeight": "20px", "verticalContentAlignment": "center", "backgroundImage": { "url": "${countFill}", "fillMode": "cover" }, "items": [ { "type": "TextBlock", "text": "${count}", "size": "small", "weight": "bolder", "isSubtle": true } ] },
+                        { "type": "Column", "width": "10px", "spacing": "none", "minHeight": "20px", "backgroundImage": { "url": "${countRight}", "fillMode": "cover" }, "items": [] }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            { "type": "TextBlock", "$when": "${!hasItems}", "text": "${empty}", "size": "small", "isSubtle": true, "spacing": "small" },
+            {
+              "type": "ColumnSet",
+              "$data": "${items}",
+              "spacing": "default",
+              "selectAction": { "type": "Action.OpenUrl", "url": "${url}", "title": "Open on GitHub" },
+              "columns": [
+                { "type": "Column", "width": "auto", "items": [ { "type": "Image", "url": "${icon}", "width": "16px", "height": "16px", "altText": "" } ] },
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "spacing": "default",
+                  "items": [
+                    { "type": "TextBlock", "text": "${title}", "size": "small", "weight": "bolder", "wrap": true, "maxLines": 1 },
+                    { "type": "TextBlock", "text": "${details}", "size": "small", "isSubtle": true, "spacing": "none", "wrap": true, "maxLines": 1 }
+                  ]
+                },
+                {
+                  "type": "Column", "$when": "${status != ''}", "width": "auto", "spacing": "small", "verticalContentAlignment": "center",
+                  "items": [
+                    {
+                      "type": "ColumnSet",
+                      "columns": [
+                        { "type": "Column", "width": "10px", "minHeight": "20px", "backgroundImage": { "url": "${statusLeft}", "fillMode": "cover" }, "items": [] },
+                        { "type": "Column", "width": "auto", "spacing": "none", "minHeight": "20px", "verticalContentAlignment": "center", "backgroundImage": { "url": "${statusFill}", "fillMode": "cover" }, "items": [ { "type": "TextBlock", "text": "${status}", "size": "small", "weight": "bolder", "color": "${statusColor}" } ] },
+                        { "type": "Column", "width": "10px", "spacing": "none", "minHeight": "20px", "backgroundImage": { "url": "${statusRight}", "fillMode": "cover" }, "items": [] }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "ColumnSet",
+          "$when": "${size != 'small'}",
+          "spacing": "medium",
+          "selectAction": { "type": "Action.Execute", "verb": "refresh", "title": "Refresh" },
+          "columns": [
+            { "type": "Column", "$when": "${avatar != ''}", "width": "auto", "verticalContentAlignment": "center", "items": [ { "type": "Image", "url": "${avatar}", "width": "16px", "height": "16px", "style": "person", "altText": "" } ] },
+            { "type": "Column", "width": "stretch", "spacing": "small", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "${footer}", "size": "small", "isSubtle": true, "wrap": true, "maxLines": 1 } ] },
+            { "type": "Column", "width": "auto", "verticalContentAlignment": "center", "items": [ { "type": "Image", "url": "${syncIcon}", "width": "14px", "height": "14px", "altText": "Refresh" } ] }
+          ]
+        }
+      ]
+    }
+  ]
+}

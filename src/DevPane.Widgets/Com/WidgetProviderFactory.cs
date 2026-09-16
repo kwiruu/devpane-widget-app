@@ -37,7 +37,7 @@ internal sealed class WidgetProviderFactory : IClassFactory
         try
         {
             // Hand back whichever interface Windows asked for (IUnknown, IWidgetProvider, ...).
-            return Marshal.QueryInterface(inspectable, ref riid, out ppvObject);
+            return Marshal.QueryInterface(inspectable, in riid, out ppvObject);
         }
         finally
         {

@@ -3,9 +3,10 @@
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+  xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
   xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  IgnorableNamespaces="uap uap3 com rescap">
+  IgnorableNamespaces="uap uap3 uap5 com rescap">
 
   <!-- Development identity. The Microsoft Store replaces Name and Publisher at release. -->
   <Identity Name="DevPane" Publisher="CN=DevPane Dev" Version="0.1.0.0" />
@@ -36,6 +37,13 @@
         AppListEntry="none" />
 
       <Extensions>
+        <!-- "devpane" on the command line, used as Claude Code's status line to report live plan limits. -->
+        <uap5:Extension Category="windows.appExecutionAlias">
+          <uap5:AppExecutionAlias>
+            <uap5:ExecutionAlias Alias="devpane.exe" />
+          </uap5:AppExecutionAlias>
+        </uap5:Extension>
+
         <!-- The process Windows launches when the Widgets Board needs Dev Pane cards. -->
         <com:Extension Category="windows.comServer">
           <com:ComServer>
@@ -58,9 +66,9 @@
                 </Activation>
                 <Definitions>
                   <Definition
-                    Id="TestCard"
-                    DisplayName="Dev Pane test card"
-                    Description="Proof-of-concept card: live CPU, update counter, and a button"
+                    Id="SystemStats"
+                    DisplayName="System stats"
+                    Description="CPU, memory, GPU, disk and network"
                     AllowMultiple="false">
                     <Capabilities>
                       <Capability>
@@ -75,10 +83,149 @@
                     </Capabilities>
                     <ThemeResources>
                       <Icons>
-                        <Icon Path="Assets\Widgets\TestCard_Icon.png" />
+                        <Icon Path="Assets\Widgets\SystemStats_Icon.png" />
                       </Icons>
                       <Screenshots>
-                        <Screenshot Path="Assets\Widgets\TestCard_Screenshot.png" DisplayAltText="Dev Pane test card showing CPU usage" />
+                        <Screenshot Path="Assets\Widgets\SystemStats_Screenshot.png" DisplayAltText="System stats card showing CPU, RAM and GPU usage" />
+                      </Screenshots>
+                      <DarkMode />
+                      <LightMode />
+                    </ThemeResources>
+                  </Definition>
+                  <Definition
+                    Id="LocalDev"
+                    DisplayName="Local dev"
+                    Description="Dev servers on your ports, dev tool memory, and WSL/Docker memory"
+                    AllowMultiple="false">
+                    <Capabilities>
+                      <Capability>
+                        <Size Name="small" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="medium" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="large" />
+                      </Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="Assets\Widgets\LocalDev_Icon.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="Assets\Widgets\LocalDev_Screenshot.png" DisplayAltText="Local dev card listing dev servers and their ports" />
+                      </Screenshots>
+                      <DarkMode />
+                      <LightMode />
+                    </ThemeResources>
+                  </Definition>
+                  <!-- AllowMultiple and IsCustomizable: pin one card for all repositories and more for single repositories. -->
+                  <Definition
+                    Id="GitHub"
+                    DisplayName="GitHub"
+                    Description="Pull requests waiting for you, your CI status, assigned issues, and workflow runs"
+                    AllowMultiple="true"
+                    IsCustomizable="true">
+                    <Capabilities>
+                      <Capability>
+                        <Size Name="small" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="medium" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="large" />
+                      </Capability>
+                    </Capabilities>
+                    <!-- The official GitHub mark, unmodified: white on dark themes, black on light themes. -->
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="Assets\Widgets\GitHub_Icon_Light.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="Assets\Widgets\GitHub_Screenshot.png" DisplayAltText="GitHub card with review requests and pull request status" />
+                      </Screenshots>
+                      <DarkMode>
+                        <Icons>
+                          <Icon Path="Assets\Widgets\GitHub_Icon_Dark.png" />
+                        </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Assets\Widgets\GitHub_Screenshot.png" DisplayAltText="GitHub card with review requests and pull request status" />
+                        </Screenshots>
+                      </DarkMode>
+                      <LightMode>
+                        <Icons>
+                          <Icon Path="Assets\Widgets\GitHub_Icon_Light.png" />
+                        </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Assets\Widgets\GitHub_Screenshot.png" DisplayAltText="GitHub card with review requests and pull request status" />
+                        </Screenshots>
+                      </LightMode>
+                    </ThemeResources>
+                  </Definition>
+                  <Definition
+                    Id="GitHubContributions"
+                    DisplayName="GitHub contributions"
+                    Description="Your contribution calendar and streaks"
+                    AllowMultiple="false">
+                    <Capabilities>
+                      <Capability>
+                        <Size Name="small" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="medium" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="large" />
+                      </Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="Assets\Widgets\GitHub_Icon_Light.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="Assets\Widgets\GitHubContributions_Screenshot.png" DisplayAltText="Contribution calendar with current and longest streak" />
+                      </Screenshots>
+                      <DarkMode>
+                        <Icons>
+                          <Icon Path="Assets\Widgets\GitHub_Icon_Dark.png" />
+                        </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Assets\Widgets\GitHubContributions_Screenshot.png" DisplayAltText="Contribution calendar with current and longest streak" />
+                        </Screenshots>
+                      </DarkMode>
+                      <LightMode>
+                        <Icons>
+                          <Icon Path="Assets\Widgets\GitHub_Icon_Light.png" />
+                        </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Assets\Widgets\GitHubContributions_Screenshot.png" DisplayAltText="Contribution calendar with current and longest streak" />
+                        </Screenshots>
+                      </LightMode>
+                    </ThemeResources>
+                  </Definition>
+                  <Definition
+                    Id="ClaudeUsage"
+                    DisplayName="Claude Code usage"
+                    Description="Claude Code usage on this PC: your current session and week with reset times, and the last 7 days"
+                    AllowMultiple="false">
+                    <Capabilities>
+                      <Capability>
+                        <Size Name="small" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="medium" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="large" />
+                      </Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="Assets\Widgets\ClaudeUsage_Icon.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="Assets\Widgets\ClaudeUsage_Screenshot.png" DisplayAltText="Claude Code usage card with the current session, this week, and a 7-day chart" />
                       </Screenshots>
                       <DarkMode />
                       <LightMode />

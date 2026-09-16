@@ -1,6 +1,7 @@
 # Build output
 bin/
 obj/
+.deploy/
 [Dd]ebug/
 [Rr]elease/
 x64/
@@ -21,6 +22,9 @@ BundleArtifacts/
 *.appx
 *.appxbundle
 *.appxupload
+
+# Local-only card icons that can't be redistributed (see tools/extract-taskmanager-icon.cs)
+src/DevPane.Widgets/Assets/Local/
 
 # Signing certificates must never be committed
 *.pfx

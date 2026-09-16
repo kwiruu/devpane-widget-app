@@ -8,12 +8,14 @@ namespace DevPane.Integrations.SystemStats;
 public static partial class MemoryStats
 {
     /// <summary>
-    /// Returns the percentage of physical memory in use, or null if Windows didn't report it.
+    /// Returns physical memory in use and the total usable memory, in bytes, or null if Windows didn't report it.
     /// </summary>
-    public static int? UsedPercent()
+    public static (ulong Used, ulong Total)? Physical()
     {
         var status = new MemoryStatusEx { Length = (uint)Marshal.SizeOf<MemoryStatusEx>() };
-        return GlobalMemoryStatusEx(ref status) ? (int)status.MemoryLoad : null;
+        return GlobalMemoryStatusEx(ref status)
+            ? (status.TotalPhys - status.AvailPhys, status.TotalPhys)
+            : null;
     }
 
     [StructLayout(LayoutKind.Sequential)]

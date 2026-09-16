@@ -2,16 +2,18 @@
 
 Developer cards for the Windows 11 Widgets Board. Press **Win + W**, click **+**, and pin the Dev Pane cards you want next to Weather.
 
-> **Status:** early development (milestone M0, the proof of concept). Nothing is installable yet.
+> **Status:** early development (milestone M1). You can build and run it yourself; there's no release yet.
 
-## Planned cards
+## Cards
 
-| Card | Shows | Milestone |
+| Card | Shows | Status |
 |---|---|---|
-| System stats | CPU, RAM, GPU | M1 |
-| GitHub | Pull requests waiting on you, CI status | M2 |
-| Claude usage | Spend and tokens (Claude Code and the Admin API) | v2 |
-| Vercel | Latest deployment per project | v2 |
+| System stats | CPU, RAM, GPU, disk, and network | In progress (M1) |
+| Local dev | Dev servers on your ports, dev tool memory, WSL/Docker memory | In progress (M1) |
+| GitHub | Reviews waiting for you, your PRs with CI status, assigned issues, workflow runs; one card per repo if you like | In progress (M2) |
+| GitHub contributions | Your contribution calendar, current and longest streak | In progress (M2) |
+| Claude usage | Spend and tokens (Claude Code and the Admin API) | Planned (v2) |
+| Vercel | Latest deployment per project | Planned (v2) |
 
 ## Build and run
 
@@ -24,14 +26,23 @@ Developer cards for the Windows 11 Widgets Board. Press **Win + W**, click **+**
 
 ### Steps
 
-1. Open `DevPane.slnx` in Visual Studio.
-2. Set **DevPane.Widgets** as the startup project and pick the **x64** platform.
-3. Press **F5**. Visual Studio installs the package and starts the widget provider.
-4. Press **Win + W**, click **+**, find **Dev Pane**, and pin the **Dev Pane test card**.
+1. From the repository folder, run:
+
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File tools\deploy-dev.ps1
+   ```
+
+   The script builds Dev Pane, copies it to `.deploy`, and installs it for your user.
+2. Press **Win + W**, click **+**, find **Dev Pane**, and pin **System stats** or **Local dev**.
+
+Add `-RestartWidgets` after changing cards in `Package.appxmanifest`, so the Widgets Board picks up the change.
+
+**Optional:** to give the System stats card Task Manager's icon on your PC, run `dotnet run tools/extract-taskmanager-icon.cs` before deploying. The icon is Microsoft's artwork, so it's saved to the gitignored `Assets/Local` folder and never committed or shipped; builds without it use Dev Pane's own icon.
 
 ### Troubleshooting
 
-- **Dev Pane isn't in the + list:** close the Widgets Board, wait a few seconds, and open it again.
+- **Dev Pane isn't in the + list:** run the script again with `-RestartWidgets`.
+- **The build fails on `resources.pri`:** the Widgets Board still has an old copy open. Run again with `-RestartWidgets`.
 - **A card is blank or stuck:** check the provider log at
   `%LOCALAPPDATA%\Packages\DevPane_<id>\LocalState\devpane-widgets.log`.
 

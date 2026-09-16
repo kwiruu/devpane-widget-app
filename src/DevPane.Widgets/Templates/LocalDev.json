@@ -1,0 +1,46 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5",
+  "body": [
+    { "type": "TextBlock", "text": "${summary}", "weight": "bolder", "wrap": true },
+    {
+      "type": "ColumnSet",
+      "$data": "${servers}",
+      "spacing": "small",
+      "columns": [
+        { "type": "Column", "width": "auto", "items": [ { "type": "TextBlock", "text": "${port}", "fontType": "monospace", "weight": "bolder", "size": "small" } ] },
+        { "type": "Column", "width": "stretch", "items": [ { "type": "TextBlock", "text": "${name}", "size": "small" } ] },
+        { "type": "Column", "width": "auto", "items": [ { "type": "TextBlock", "$when": "${exposed}", "text": "On network", "size": "small", "color": "warning" } ] }
+      ]
+    },
+    { "type": "TextBlock", "$when": "${moreServers != ''}", "text": "${moreServers}", "size": "small", "isSubtle": true, "spacing": "small" },
+    {
+      "type": "Container",
+      "$when": "${size == 'large'}",
+      "separator": true,
+      "spacing": "medium",
+      "items": [
+        { "type": "TextBlock", "text": "Dev processes", "size": "small", "isSubtle": true },
+        { "type": "TextBlock", "$when": "${!hasProcesses}", "text": "None running", "size": "small", "spacing": "small" },
+        {
+          "type": "ColumnSet",
+          "$data": "${processes}",
+          "spacing": "small",
+          "columns": [
+            { "type": "Column", "width": "stretch", "items": [ { "type": "TextBlock", "text": "${name}", "size": "small" } ] },
+            { "type": "Column", "width": "auto", "items": [ { "type": "TextBlock", "text": "${memory}", "size": "small", "weight": "bolder" } ] }
+          ]
+        },
+        {
+          "type": "ColumnSet",
+          "spacing": "small",
+          "columns": [
+            { "type": "Column", "width": "stretch", "items": [ { "type": "TextBlock", "text": "WSL / Docker VM", "size": "small", "isSubtle": true } ] },
+            { "type": "Column", "width": "auto", "items": [ { "type": "TextBlock", "text": "${vm}", "size": "small", "weight": "bolder" } ] }
+          ]
+        }
+      ]
+    }
+  ]
+}

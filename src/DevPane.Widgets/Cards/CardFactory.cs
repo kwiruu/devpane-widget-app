@@ -9,7 +9,11 @@ internal static class CardFactory
 {
     public static CardBase? Create(WidgetContext context, string? customState) => context.DefinitionId switch
     {
-        TestCard.DefinitionId => new TestCard(context, customState),
+        SystemCard.DefinitionId => new SystemCard(context, customState),
+        LocalDevCard.DefinitionId => new LocalDevCard(context, customState),
+        GitHubCard.DefinitionId => new GitHubCard(context, customState),
+        ContributionsCard.DefinitionId => new ContributionsCard(context, customState),
+        ClaudeCard.DefinitionId => new ClaudeCard(context, customState),
         _ => null,
     };
 }
