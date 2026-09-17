@@ -1,0 +1,341 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "Container",
+      "$when": "${size != 'small' && state != 'connected'}",
+      "minHeight": "14px",
+      "items": []
+    },
+    {
+      "type": "Container",
+      "$when": "${state == 'connected'}",
+      "minHeight": "6px",
+      "items": []
+    },
+    {
+      "type": "Container",
+      "$when": "${state == 'disconnected' && size == 'small'}",
+      "items": [
+        { "type": "Image", "url": "${mark}", "width": "${markSize}", "horizontalAlignment": "center", "altText": "Vercel" },
+        { "type": "TextBlock", "text": "Connect Vercel", "weight": "bolder", "horizontalAlignment": "center", "spacing": "small" },
+        { "type": "TextBlock", "text": "Resize to medium to connect.", "size": "small", "isSubtle": true, "horizontalAlignment": "center", "maxLines": 1, "spacing": "none" }
+      ]
+    },
+    {
+      "type": "Container",
+      "$when": "${state == 'disconnected' && size != 'small'}",
+      "minHeight": "${centerHeight}",
+      "verticalContentAlignment": "center",
+      "items": [
+        { "type": "Image", "url": "${mark}", "width": "${markSize}", "horizontalAlignment": "center", "altText": "Vercel" },
+        { "type": "TextBlock", "text": "Connect Vercel", "size": "large", "weight": "bolder", "horizontalAlignment": "center", "spacing": "medium" },
+        { "type": "TextBlock", "$when": "${notice == ''}", "text": "Paste a Vercel access token.", "size": "small", "isSubtle": true, "horizontalAlignment": "center", "spacing": "small" },
+        { "type": "TextBlock", "$when": "${notice != ''}", "text": "${notice}", "size": "small", "color": "attention", "wrap": true, "maxLines": 2, "horizontalAlignment": "center", "spacing": "small" },
+        { "type": "Input.Text", "id": "token", "style": "password", "placeholder": "Paste your token", "spacing": "medium" },
+        {
+          "type": "ColumnSet",
+          "spacing": "small",
+          "selectAction": { "type": "Action.Execute", "verb": "connect", "title": "Connect Vercel", "associatedInputs": "auto" },
+          "columns": [
+            { "type": "Column", "width": "6px", "minHeight": "36px", "backgroundImage": { "url": "${buttonLeft}", "fillMode": "cover" }, "items": [] },
+            {
+              "type": "Column", "width": "stretch", "spacing": "none", "minHeight": "36px", "verticalContentAlignment": "center",
+              "backgroundImage": { "url": "${buttonFill}", "fillMode": "cover" },
+              "items": [ { "type": "TextBlock", "text": "Connect", "weight": "bolder", "color": "${buttonText}", "horizontalAlignment": "center" } ]
+            },
+            { "type": "Column", "width": "6px", "spacing": "none", "minHeight": "36px", "backgroundImage": { "url": "${buttonRight}", "fillMode": "cover" }, "items": [] }
+          ]
+        },
+        {
+          "type": "Container",
+          "spacing": "small",
+          "selectAction": { "type": "Action.OpenUrl", "url": "${tokensUrl}", "title": "Create a token on Vercel" },
+          "items": [ { "type": "TextBlock", "text": "Create a token on Vercel", "size": "small", "isSubtle": true, "horizontalAlignment": "center" } ]
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "$when": "${state == 'checking'}",
+      "minHeight": "${centerHeight}",
+      "verticalContentAlignment": "center",
+      "items": [
+        { "type": "Image", "url": "${mark}", "width": "${markSize}", "horizontalAlignment": "center", "altText": "Vercel" },
+        { "type": "TextBlock", "text": "Checking your token…", "size": "small", "isSubtle": true, "horizontalAlignment": "center", "spacing": "medium" }
+      ]
+    },
+    {
+      "type": "Container",
+      "$when": "${state == 'connected' && !hasProjects}",
+      "items": [ { "type": "TextBlock", "text": "${empty}", "size": "small", "isSubtle": true, "wrap": true } ]
+    },
+    {
+      "type": "Container",
+      "$when": "${state == 'connected' && hasProjects}",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "$data": "${projects}",
+          "spacing": "${spacing}",
+          "selectAction": { "type": "Action.OpenUrl", "url": "${url}", "title": "Open on Vercel" },
+          "columns": [
+            { "type": "Column", "width": "16px", "minHeight": "${cardHeight}", "backgroundImage": { "url": "${cardLeft}", "fillMode": "cover" }, "items": [] },
+            {
+              "type": "Column", "width": "stretch", "spacing": "none", "minHeight": "${cardHeight}", "verticalContentAlignment": "center",
+              "backgroundImage": { "url": "${cardFill}", "fillMode": "cover" },
+              "items": [
+                {
+                  "type": "ColumnSet",
+                  "columns": [
+                    {
+                      "type": "Column", "width": "32px", "verticalContentAlignment": "center",
+                      "items": [
+                        { "type": "Image", "$when": "${hasIcon}", "url": "${icon}", "width": "32px", "height": "32px", "altText": "" },
+                        {
+                          "type": "Container", "$when": "${!hasIcon}", "minHeight": "32px", "verticalContentAlignment": "center",
+                          "backgroundImage": { "url": "${tile}", "fillMode": "cover" },
+                          "items": [ { "type": "TextBlock", "text": "${initial}", "weight": "bolder", "horizontalAlignment": "center" } ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Column", "width": "stretch", "spacing": "medium", "verticalContentAlignment": "center",
+                      "items": [
+                        { "type": "TextBlock", "text": "${name}", "weight": "bolder", "maxLines": 1 },
+                        { "type": "TextBlock", "text": "${domain}", "size": "small", "isSubtle": true, "spacing": "none", "maxLines": 1 }
+                      ]
+                    },
+                    { "type": "Column", "width": "auto", "verticalContentAlignment": "center", "items": [ { "type": "Image", "url": "${ring}", "width": "20px", "height": "20px", "altText": "${status}" } ] }
+                  ]
+                },
+                {
+                  "type": "ColumnSet",
+                  "$when": "${showCommit}",
+                  "spacing": "default",
+                  "columns": [
+                    { "type": "Column", "width": "auto", "verticalContentAlignment": "center", "items": [ { "type": "Image", "url": "${commitIcon}", "width": "14px", "height": "14px", "altText": "" } ] },
+                    { "type": "Column", "width": "stretch", "spacing": "small", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "${commit}", "size": "small", "weight": "bolder", "maxLines": 1 } ] },
+                    { "type": "Column", "$when": "${date != ''}", "width": "auto", "spacing": "small", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "${date}", "size": "small", "isSubtle": true } ] }
+                  ]
+                },
+                {
+                  "type": "ColumnSet",
+                  "$when": "${showRepo}",
+                  "spacing": "small",
+                  "columns": [
+                    { "type": "Column", "width": "auto", "verticalContentAlignment": "center", "items": [ { "type": "Image", "url": "${repoIcon}", "width": "14px", "height": "14px", "altText": "" } ] },
+                    { "type": "Column", "width": "stretch", "spacing": "small", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "${repo}", "size": "small", "isSubtle": true, "maxLines": 1 } ] }
+                  ]
+                }
+              ]
+            },
+            { "type": "Column", "width": "16px", "spacing": "none", "minHeight": "${cardHeight}", "backgroundImage": { "url": "${cardRight}", "fillMode": "cover" }, "items": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "$when": "${state == 'connected' && mode == 'project' && hasProjects && !hasDeployment}",
+      "text": "${noDeployment}",
+      "size": "small",
+      "isSubtle": true,
+      "spacing": "medium"
+    },
+    {
+      "type": "Container",
+      "$when": "${state == 'connected' && mode == 'project' && hasDeployment}",
+      "spacing": "medium",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "$when": "${!hasSource}",
+          "selectAction": { "type": "Action.OpenUrl", "url": "${deployUrl}", "title": "Open this deployment on Vercel" },
+          "columns": [
+            { "type": "Column", "width": "auto", "verticalContentAlignment": "center", "items": [ { "type": "Image", "url": "${commitIcon}", "width": "14px", "height": "14px", "altText": "" } ] },
+            { "type": "Column", "width": "stretch", "spacing": "small", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "${deployCommit}", "size": "small", "weight": "bolder", "maxLines": 1 } ] }
+          ]
+        },
+        {
+          "type": "Container",
+          "$when": "${hasDomains}",
+          "spacing": "default",
+          "items": [
+            { "type": "TextBlock", "text": "Domains", "size": "small", "isSubtle": true },
+            {
+              "type": "ColumnSet",
+              "$data": "${domains}",
+              "spacing": "small",
+              "selectAction": { "type": "Action.OpenUrl", "url": "${url}", "title": "Open ${name}" },
+              "columns": [
+                { "type": "Column", "width": "auto", "verticalContentAlignment": "center", "items": [ { "type": "Image", "url": "${icon}", "width": "14px", "height": "14px", "altText": "" } ] },
+                { "type": "Column", "width": "stretch", "spacing": "small", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "${name}", "size": "small", "maxLines": 1 } ] }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Container",
+          "$when": "${hasSource}",
+          "spacing": "default",
+          "items": [
+            { "type": "TextBlock", "text": "Source", "size": "small", "isSubtle": true },
+            {
+              "type": "ColumnSet",
+              "$when": "${branch != ''}",
+              "spacing": "small",
+              "selectAction": { "type": "Action.OpenUrl", "url": "${branchUrl}", "title": "Open this branch" },
+              "columns": [
+                { "type": "Column", "width": "auto", "verticalContentAlignment": "center", "items": [ { "type": "Image", "url": "${branchIcon}", "width": "14px", "height": "14px", "altText": "" } ] },
+                { "type": "Column", "width": "stretch", "spacing": "small", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "${branch}", "size": "small", "fontType": "monospace", "maxLines": 1 } ] }
+              ]
+            },
+            {
+              "type": "ColumnSet",
+              "spacing": "small",
+              "selectAction": { "type": "Action.OpenUrl", "url": "${commitUrl}", "title": "Open this commit" },
+              "columns": [
+                { "type": "Column", "width": "auto", "verticalContentAlignment": "center", "items": [ { "type": "Image", "url": "${commitIcon}", "width": "14px", "height": "14px", "altText": "" } ] },
+                { "type": "Column", "width": "auto", "spacing": "small", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "${commitSha}", "size": "small", "fontType": "monospace" } ] },
+                { "type": "Column", "width": "stretch", "spacing": "small", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "${deployCommit}", "size": "small", "maxLines": 1 } ] }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "ColumnSet",
+          "spacing": "default",
+          "selectAction": { "type": "Action.OpenUrl", "url": "${deployUrl}", "title": "Open the build logs on Vercel" },
+          "columns": [
+            { "type": "Column", "width": "12px", "minHeight": "${logHeight}", "backgroundImage": { "url": "${logLeft}", "fillMode": "cover" }, "items": [] },
+            {
+              "type": "Column", "width": "stretch", "spacing": "none", "minHeight": "${logHeight}", "verticalContentAlignment": "center",
+              "backgroundImage": { "url": "${logFill}", "fillMode": "cover" },
+              "items": [
+                {
+                  "type": "ColumnSet",
+                  "columns": [
+                    { "type": "Column", "width": "60px", "verticalContentAlignment": "center", "items": [ { "type": "Image", "url": "${terminalIcon}", "width": "14px", "height": "14px", "altText": "" } ] },
+                    { "type": "Column", "width": "stretch", "spacing": "small", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "build logs", "size": "small", "fontType": "monospace", "color": "${terminalText}", "isSubtle": true, "horizontalAlignment": "center", "maxLines": 1 } ] },
+                    { "type": "Column", "width": "60px", "spacing": "small", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "${terminalStatus}", "size": "small", "fontType": "monospace", "color": "${terminalStatusColor}", "isSubtle": true, "horizontalAlignment": "right" } ] }
+                  ]
+                },
+                { "type": "TextBlock", "$when": "${!hasLog}", "text": "${noLog}", "size": "small", "fontType": "monospace", "color": "${terminalText}", "isSubtle": true, "spacing": "small" },
+                {
+                  "type": "Container",
+                  "$when": "${hasLog}",
+                  "spacing": "small",
+                  "items": [
+                    { "type": "TextBlock", "$data": "${log}", "text": "${text}", "size": "small", "fontType": "monospace", "color": "${color}", "isSubtle": "${subtle}", "spacing": "none", "maxLines": 1 }
+                  ]
+                }
+              ]
+            },
+            { "type": "Column", "width": "12px", "spacing": "none", "minHeight": "${logHeight}", "backgroundImage": { "url": "${logRight}", "fillMode": "cover" }, "items": [] }
+          ]
+        },
+        {
+          "type": "ColumnSet",
+          "$when": "${showButtons}",
+          "spacing": "default",
+          "columns": [
+            {
+              "type": "Column", "width": "stretch",
+              "items": [
+                {
+                  "type": "ColumnSet",
+                  "selectAction": { "type": "Action.Execute", "verb": "share", "title": "Copy the link to this deployment" },
+                  "columns": [
+                    { "type": "Column", "width": "6px", "minHeight": "32px", "backgroundImage": { "url": "${secondaryLeft}", "fillMode": "cover" }, "items": [] },
+                    {
+                      "type": "Column", "width": "stretch", "spacing": "none", "minHeight": "32px", "verticalContentAlignment": "center",
+                      "backgroundImage": { "url": "${secondaryFill}", "fillMode": "cover" },
+                      "items": [
+                        {
+                          "type": "ColumnSet",
+                          "horizontalAlignment": "center",
+                          "columns": [
+                            { "type": "Column", "width": "auto", "verticalContentAlignment": "center", "items": [ { "type": "Image", "url": "${shareIcon}", "width": "14px", "height": "14px", "altText": "" } ] },
+                            { "type": "Column", "width": "auto", "spacing": "default", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "${shareLabel}", "size": "small", "weight": "bolder" } ] }
+                          ]
+                        }
+                      ]
+                    },
+                    { "type": "Column", "width": "6px", "spacing": "none", "minHeight": "32px", "backgroundImage": { "url": "${secondaryRight}", "fillMode": "cover" }, "items": [] }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Column", "width": "stretch", "spacing": "small",
+              "items": [
+                {
+                  "type": "ColumnSet",
+                  "selectAction": { "type": "Action.OpenUrl", "url": "${deployUrl}", "title": "Open the build logs on Vercel" },
+                  "columns": [
+                    { "type": "Column", "width": "6px", "minHeight": "32px", "backgroundImage": { "url": "${secondaryLeft}", "fillMode": "cover" }, "items": [] },
+                    {
+                      "type": "Column", "width": "stretch", "spacing": "none", "minHeight": "32px", "verticalContentAlignment": "center",
+                      "backgroundImage": { "url": "${secondaryFill}", "fillMode": "cover" },
+                      "items": [
+                        {
+                          "type": "ColumnSet",
+                          "horizontalAlignment": "center",
+                          "columns": [
+                            { "type": "Column", "width": "auto", "verticalContentAlignment": "center", "items": [ { "type": "Image", "url": "${logsIcon}", "width": "14px", "height": "14px", "altText": "" } ] },
+                            { "type": "Column", "width": "auto", "spacing": "default", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "Logs", "size": "small", "weight": "bolder" } ] }
+                          ]
+                        }
+                      ]
+                    },
+                    { "type": "Column", "width": "6px", "spacing": "none", "minHeight": "32px", "backgroundImage": { "url": "${secondaryRight}", "fillMode": "cover" }, "items": [] }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Column", "width": "stretch", "spacing": "small",
+              "items": [
+                {
+                  "type": "ColumnSet",
+                  "selectAction": { "type": "Action.OpenUrl", "url": "${visitUrl}", "title": "Visit ${visitName}" },
+                  "columns": [
+                    { "type": "Column", "width": "6px", "minHeight": "32px", "backgroundImage": { "url": "${primaryLeft}", "fillMode": "cover" }, "items": [] },
+                    {
+                      "type": "Column", "width": "stretch", "spacing": "none", "minHeight": "32px", "verticalContentAlignment": "center",
+                      "backgroundImage": { "url": "${primaryFill}", "fillMode": "cover" },
+                      "items": [
+                        {
+                          "type": "ColumnSet",
+                          "horizontalAlignment": "center",
+                          "columns": [
+                            { "type": "Column", "width": "auto", "verticalContentAlignment": "center", "items": [ { "type": "Image", "url": "${visitIcon}", "width": "14px", "height": "14px", "altText": "" } ] },
+                            { "type": "Column", "width": "auto", "spacing": "default", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "Visit", "size": "small", "weight": "bolder", "color": "${buttonText}" } ] }
+                          ]
+                        }
+                      ]
+                    },
+                    { "type": "Column", "width": "6px", "spacing": "none", "minHeight": "32px", "backgroundImage": { "url": "${primaryRight}", "fillMode": "cover" }, "items": [] }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ColumnSet",
+      "$when": "${state == 'connected' && size != 'small'}",
+      "spacing": "medium",
+      "selectAction": { "type": "Action.Execute", "verb": "refresh", "title": "Refresh" },
+      "columns": [
+        { "type": "Column", "width": "stretch", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "${footer}", "size": "small", "isSubtle": true, "maxLines": 1 } ] },
+        { "type": "Column", "width": "auto", "verticalContentAlignment": "center", "items": [ { "type": "Image", "url": "${syncIcon}", "width": "14px", "height": "14px", "altText": "Refresh" } ] }
+      ]
+    }
+  ]
+}

@@ -119,7 +119,7 @@ internal sealed partial class GitHubCard : GitHubCardBase<GitHubCard.Reading>
         }
 
         var latest = Latest is { } previous && previous.Repository == repository ? previous : null;
-        if (GitHubSession.Client is not { } client)
+        if (await GitHubSession.GetClientAsync() is not { } client)
         {
             return new Reading(repository, null, null, null);
         }
@@ -187,7 +187,7 @@ internal sealed partial class GitHubCard : GitHubCardBase<GitHubCard.Reading>
             Tile("My PRs", Octicon.PullRequest, overview?.MyPullRequests.TotalCount, LabelTone.Success,
                 SearchUrl(repository, "pulls", "is:open is:pr author:@me", "https://github.com/pulls"),
                 "Open your pull requests on GitHub",
-                badge: prDetail.Length > 0 ? (GitHubStyle.StatusIcon(prDetailTone, light), prDetail) : null, light),
+                badge: prDetail.Length > 0 ? (CardStyle.StatusIcon(prDetailTone, light), prDetail) : null, light),
             Tile("Issues", Octicon.Issue, overview?.AssignedIssues.TotalCount, LabelTone.Accent,
                 SearchUrl(repository, "issues", "is:open is:issue assignee:@me", "https://github.com/issues/assigned"),
                 "Open your assigned issues on GitHub", badge: null, light),
@@ -203,7 +203,8 @@ internal sealed partial class GitHubCard : GitHubCardBase<GitHubCard.Reading>
         return data;
     }
 
-    /// <param name="activeTone">The tile's tint while it counts anything; empty and loading tiles are gray.</param>
+    /// <param name="activeTone">The icon's color while the tile counts anything; empty and loading tiles are gray. The
+    /// tile's background stays gray either way.</param>
     /// <param name="badge">A status icon beside the count, with its description, or null for none.</param>
     private JsonObject Tile(
         string label,
@@ -217,14 +218,14 @@ internal sealed partial class GitHubCard : GitHubCardBase<GitHubCard.Reading>
     {
         bool small = Size == WidgetSize.Small;
         int height = small ? SmallTileHeight : TileHeight;
-        var tone = count > 0 ? activeTone : LabelTone.Neutral;
-        var (left, fill, right) = CardStyle.Surface(tone, light, TileEndWidth, height);
+        var iconTone = count > 0 ? activeTone : LabelTone.Neutral;
+        var (left, fill, right) = CardStyle.Surface(LabelTone.Neutral, light, TileEndWidth, height);
         return new JsonObject
         {
             ["label"] = label,
             ["count"] = count?.ToString(CultureInfo.CurrentCulture) ?? Format.Missing,
             ["valueSize"] = small ? "large" : "extraLarge",
-            ["icon"] = GitHubStyle.Icon(icon, tone, light),
+            ["icon"] = GitHubStyle.Icon(icon, iconTone, light),
             ["badge"] = badge?.Icon ?? string.Empty,
             ["badgeText"] = badge?.Text ?? string.Empty,
             ["url"] = url,
@@ -258,53 +259,63 @@ internal sealed partial class GitHubCard : GitHubCardBase<GitHubCard.Reading>
             return sections;
         }
 
-        // Large fits two lists. Issues stay a count above, which links to the full list on GitHub.
+        // Large fits three lists, including the user's assigned issues alongside pull requests.
         if (overview.WorkflowRuns is { } repositoryRuns)
         {
             bool reviews = overview.ReviewRequests.Items.Count > 0;
-            var (runRows, pullRequestRows) = SplitRows(
+            var rows = SplitRows(
+                LargeRows,
                 repositoryRuns.Count,
-                reviews ? overview.ReviewRequests.Items.Count : overview.MyPullRequests.Items.Count);
-            sections.Add(WorkflowRunSection(repositoryRuns, runRows, light));
+                reviews ? overview.ReviewRequests.Items.Count : overview.MyPullRequests.Items.Count,
+                overview.AssignedIssues.Items.Count);
+            sections.Add(WorkflowRunSection(repositoryRuns, rows[0], light));
             sections.Add(reviews
-                ? ReviewSection(overview, allRepositories, pullRequestRows, light)
-                : MyPullRequestSection(overview, allRepositories, pullRequestRows, light));
+                ? ReviewSection(overview, allRepositories, rows[1], light)
+                : MyPullRequestSection(overview, allRepositories, rows[1], light));
+            sections.Add(IssueSection(overview, allRepositories, rows[2], light));
         }
         else
         {
-            var (reviewRows, myRows) = SplitRows(overview.ReviewRequests.Items.Count, overview.MyPullRequests.Items.Count);
-            sections.Add(ReviewSection(overview, allRepositories, reviewRows, light));
-            sections.Add(MyPullRequestSection(overview, allRepositories, myRows, light));
+            var rows = SplitRows(
+                LargeRows,
+                overview.ReviewRequests.Items.Count,
+                overview.MyPullRequests.Items.Count,
+                overview.AssignedIssues.Items.Count);
+            sections.Add(ReviewSection(overview, allRepositories, rows[0], light));
+            sections.Add(MyPullRequestSection(overview, allRepositories, rows[1], light));
+            sections.Add(IssueSection(overview, allRepositories, rows[2], light));
         }
 
         return sections;
     }
 
     /// <summary>
-    /// Shares the large card's rows between two lists. Each list keeps one row, for its first item or its "nothing here"
-    /// line; the rest alternate between lists, so a short list leaves its rows to the other.
+    /// Shares the large card's rows between several lists. Each list keeps one row, for its first item or its "nothing
+    /// here" line; the rest go round-robin to lists that still have unshown items, so a short list leaves its rows to
+    /// the others.
     /// </summary>
-    private static (int First, int Second) SplitRows(int firstItems, int secondItems)
+    private static int[] SplitRows(int totalRows, params int[] itemCounts)
     {
-        int first = 1;
-        int second = 1;
-        int remaining = LargeRows - 2;
-        while (remaining > 0 && (first < firstItems || second < secondItems))
-        {
-            if (first < firstItems)
-            {
-                first++;
-                remaining--;
-            }
+        var rows = new int[itemCounts.Length];
+        Array.Fill(rows, 1);
 
-            if (remaining > 0 && second < secondItems)
+        int remaining = totalRows - rows.Length;
+        bool progress = true;
+        while (remaining > 0 && progress)
+        {
+            progress = false;
+            for (int i = 0; i < rows.Length && remaining > 0; i++)
             {
-                second++;
-                remaining--;
+                if (rows[i] < itemCounts[i])
+                {
+                    rows[i]++;
+                    remaining--;
+                    progress = true;
+                }
             }
         }
 
-        return (first, second);
+        return rows;
     }
 
     private static JsonObject ReviewSection(GitHubOverview overview, bool allRepositories, int count, bool light) => Section(
@@ -313,7 +324,7 @@ internal sealed partial class GitHubCard : GitHubCardBase<GitHubCard.Reading>
         overview.ReviewRequests.TotalCount,
         "No reviews waiting for you.",
         overview.ReviewRequests.Items.Take(count).Select(pr => Item(
-            PullRequestIcon(pr, light),
+            GitHubStyle.Icon(Octicon.Dot, LabelTone.Neutral, light),
             pr.Title,
             Details(Where(pr.Repository, pr.Number, allRepositories), pr.Author, pr.UpdatedAt),
             pr.IsDraft ? "Draft" : string.Empty,
@@ -330,15 +341,34 @@ internal sealed partial class GitHubCard : GitHubCardBase<GitHubCard.Reading>
         overview.MyPullRequests.Items.Take(count).Select(pr =>
         {
             var (status, tone) = DescribePullRequestStatus(pr);
+            // A passing PR gets a checkmark instead of a "Passing" pill: with everything else about it already good,
+            // the check is enough.
+            string? statusIcon = status == "Passing" ? GitHubStyle.Icon(Octicon.Check, tone, light) : null;
             return Item(
-                PullRequestIcon(pr, light),
+                GitHubStyle.Icon(Octicon.Dot, LabelTone.Neutral, light),
                 pr.Title,
                 Details(Where(pr.Repository, pr.Number, allRepositories), author: null, pr.UpdatedAt),
                 status,
                 tone,
                 pr.Url,
-                light);
+                light,
+                statusIcon);
         }),
+        light);
+
+    private static JsonObject IssueSection(GitHubOverview overview, bool allRepositories, int count, bool light) => Section(
+        Octicon.Issue,
+        "Your issues",
+        overview.AssignedIssues.TotalCount,
+        "You have no open issues assigned.",
+        overview.AssignedIssues.Items.Take(count).Select(issue => Item(
+            GitHubStyle.Icon(Octicon.Dot, LabelTone.Neutral, light),
+            issue.Title,
+            Details(Where(issue.Repository, issue.Number, allRepositories), author: null, issue.UpdatedAt),
+            status: string.Empty,
+            LabelTone.Neutral,
+            issue.Url,
+            light)),
         light);
 
     private static JsonObject WorkflowRunSection(IReadOnlyList<WorkflowRunItem> runs, int count, bool light) => Section(
@@ -399,6 +429,7 @@ internal sealed partial class GitHubCard : GitHubCardBase<GitHubCard.Reading>
         };
     }
 
+    /// <param name="statusIcon">Shown beside the title instead of the status pill, for example a checkmark for "Passing".</param>
     private static JsonObject Item(
         string icon,
         string title,
@@ -406,7 +437,8 @@ internal sealed partial class GitHubCard : GitHubCardBase<GitHubCard.Reading>
         string status,
         LabelTone tone,
         string url,
-        bool light)
+        bool light,
+        string? statusIcon = null)
     {
         var (left, fill, right) = CardStyle.Surface(tone, light, PillEndWidth, PillHeight);
         return new JsonObject
@@ -420,13 +452,10 @@ internal sealed partial class GitHubCard : GitHubCardBase<GitHubCard.Reading>
             ["statusLeft"] = left,
             ["statusFill"] = fill,
             ["statusRight"] = right,
+            ["hasStatusIcon"] = statusIcon is not null,
+            ["statusIcon"] = statusIcon ?? string.Empty,
         };
     }
-
-    // Like GitHub's lists: a green pull request icon when open, a gray draft icon for drafts.
-    private static string PullRequestIcon(PullRequestItem pr, bool light) => pr.IsDraft
-        ? GitHubStyle.Icon(Octicon.DraftPullRequest, LabelTone.Neutral, light)
-        : GitHubStyle.Icon(Octicon.PullRequest, LabelTone.Success, light);
 
     private static string Where(string repository, int number, bool includeRepository) =>
         includeRepository ? $"{repository} #{number}" : $"#{number}";
@@ -501,7 +530,7 @@ internal sealed partial class GitHubCard : GitHubCardBase<GitHubCard.Reading>
 
     private async Task LoadRecentRepositoriesAsync()
     {
-        if (GitHubSession.Client is not { } client)
+        if (await GitHubSession.GetClientAsync() is not { } client)
         {
             return;
         }
@@ -529,7 +558,7 @@ internal sealed partial class GitHubCard : GitHubCardBase<GitHubCard.Reading>
 
     private async Task SaveCustomizationAsync(string data)
     {
-        var inputs = ReadInputs(data);
+        var inputs = CardInputs.Read(data);
         string typed = inputs.GetValueOrDefault("typedRepo")?.Trim() ?? string.Empty;
         string selected = inputs.GetValueOrDefault("repo") ?? AllRepositoriesChoice;
 
@@ -548,7 +577,7 @@ internal sealed partial class GitHubCard : GitHubCardBase<GitHubCard.Reading>
             repository = selected == AllRepositoriesChoice ? null : selected;
         }
 
-        if (repository is not null && GitHubSession.Client is { } client)
+        if (repository is not null && await GitHubSession.GetClientAsync() is { } client)
         {
             try
             {
@@ -604,26 +633,6 @@ internal sealed partial class GitHubCard : GitHubCardBase<GitHubCard.Reading>
         {
             RequestRefresh();
         }
-    }
-
-    // Input values arrive as a JSON object keyed by input ID.
-    private static Dictionary<string, string> ReadInputs(string data)
-    {
-        var inputs = new Dictionary<string, string>(StringComparer.Ordinal);
-        if (string.IsNullOrWhiteSpace(data) || JsonNode.Parse(data) is not JsonObject values)
-        {
-            return inputs;
-        }
-
-        foreach (var (key, value) in values)
-        {
-            if (value is JsonValue jsonValue && jsonValue.TryGetValue(out string? text))
-            {
-                inputs[key] = text;
-            }
-        }
-
-        return inputs;
     }
 
     /// <summary>Accepts "owner/name", "owner/name.git", or a github.com URL; returns "owner/name" or null.</summary>

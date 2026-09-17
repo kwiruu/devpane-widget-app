@@ -14,6 +14,7 @@ internal static class CardFactory
         GitHubCard.DefinitionId => new GitHubCard(context, customState),
         ContributionsCard.DefinitionId => new ContributionsCard(context, customState),
         ClaudeCard.DefinitionId => new ClaudeCard(context, customState),
+        VercelCard.DefinitionId => new VercelCard(context, customState),
         _ => null,
     };
 }

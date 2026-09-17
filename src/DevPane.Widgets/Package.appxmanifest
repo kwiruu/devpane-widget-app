@@ -231,6 +231,49 @@
                       <LightMode />
                     </ThemeResources>
                   </Definition>
+                  <!-- AllowMultiple and IsCustomizable: pin one card for everything and more for single teams or projects. -->
+                  <Definition
+                    Id="Vercel"
+                    DisplayName="Vercel"
+                    Description="Your latest Vercel deployments and production status per project"
+                    AllowMultiple="true"
+                    IsCustomizable="true">
+                    <Capabilities>
+                      <Capability>
+                        <Size Name="small" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="medium" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="large" />
+                      </Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="Assets\Widgets\Vercel_Icon_Light.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="Assets\Widgets\Vercel_Screenshot.png" DisplayAltText="Vercel card listing recent deployments with their status" />
+                      </Screenshots>
+                      <DarkMode>
+                        <Icons>
+                          <Icon Path="Assets\Widgets\Vercel_Icon_Dark.png" />
+                        </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Assets\Widgets\Vercel_Screenshot.png" DisplayAltText="Vercel card listing recent deployments with their status" />
+                        </Screenshots>
+                      </DarkMode>
+                      <LightMode>
+                        <Icons>
+                          <Icon Path="Assets\Widgets\Vercel_Icon_Light.png" />
+                        </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Assets\Widgets\Vercel_Screenshot.png" DisplayAltText="Vercel card listing recent deployments with their status" />
+                        </Screenshots>
+                      </LightMode>
+                    </ThemeResources>
+                  </Definition>
                 </Definitions>
               </WidgetProvider>
             </uap3:Properties>

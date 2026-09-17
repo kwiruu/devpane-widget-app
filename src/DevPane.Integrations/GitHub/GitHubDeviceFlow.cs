@@ -18,8 +18,16 @@ public enum DeviceFlowOutcome
     Denied,
 }
 
-/// <param name="AccessToken">Set when <paramref name="Outcome"/> is <see cref="DeviceFlowOutcome.Approved"/>.</param>
-public sealed record DeviceFlowResult(DeviceFlowOutcome Outcome, string? AccessToken);
+/// <param name="Token">Set when <paramref name="Outcome"/> is <see cref="DeviceFlowOutcome.Approved"/>.</param>
+public sealed record DeviceFlowResult(DeviceFlowOutcome Outcome, GitHubToken? Token);
+
+/// <summary>
+/// A user access token. OAuth Apps that opt in to expiring tokens (the default for apps created since August 2026)
+/// issue tokens that last eight hours, with a refresh token that renews them.
+/// </summary>
+/// <param name="ExpiresAt">When the access token stops working, or null when it doesn't expire.</param>
+/// <param name="RefreshToken">Renews the access token, once. Null when the access token doesn't expire.</param>
+public sealed record GitHubToken(string AccessToken, DateTimeOffset? ExpiresAt, string? RefreshToken);
 
 /// <summary>GitHub refused to start or finish sign-in, for example because device flow is turned off.</summary>
 public sealed class GitHubDeviceFlowException(string message) : GitHubException(message);
@@ -33,6 +41,7 @@ public static class GitHubDeviceFlow
     private const string DeviceCodeUrl = "https://github.com/login/device/code";
     private const string AccessTokenUrl = "https://github.com/login/oauth/access_token";
     private const string DeviceGrantType = "urn:ietf:params:oauth:grant-type:device_code";
+    private const string RefreshGrantType = "refresh_token";
     private static readonly TimeSpan SlowDownStep = TimeSpan.FromSeconds(5);
 
     public static async Task<DeviceCode> RequestCodeAsync(string clientId, string scopes, CancellationToken cancellationToken)
@@ -74,8 +83,7 @@ public static class GitHubDeviceFlow
             }, cancellationToken);
 
             var root = json.RootElement;
-            string token = GitHubHttp.GetString(root, "access_token");
-            if (token.Length > 0)
+            if (ReadToken(root) is { } token)
             {
                 return new DeviceFlowResult(DeviceFlowOutcome.Approved, token);
             }
@@ -99,6 +107,52 @@ public static class GitHubDeviceFlow
         }
 
         return new DeviceFlowResult(DeviceFlowOutcome.Expired, null);
+    }
+
+    /// <summary>
+    /// Trades a refresh token for a new access token and refresh token. The old ones stop working right away, so save
+    /// the result before using it. Returns null when GitHub no longer accepts the refresh token, for example after
+    /// six months without a renewal. Tokens from the device flow renew without a client secret.
+    /// </summary>
+    public static async Task<GitHubToken?> RefreshAsync(string clientId, string refreshToken, CancellationToken cancellationToken)
+    {
+        using var json = await PostFormAsync(AccessTokenUrl, new Dictionary<string, string>
+        {
+            ["client_id"] = clientId,
+            ["refresh_token"] = refreshToken,
+            ["grant_type"] = RefreshGrantType,
+        }, cancellationToken);
+
+        var root = json.RootElement;
+        if (ReadToken(root) is { } token)
+        {
+            return token;
+        }
+
+        // GitHub asks for a client secret when it doesn't recognize the refresh token as one from the device flow, so a
+        // refresh token it no longer knows can come back as incorrect_client_credentials instead of bad_refresh_token.
+        string error = GitHubHttp.GetString(root, "error");
+        return error is "bad_refresh_token" or "incorrect_client_credentials"
+            ? null
+            : throw new GitHubDeviceFlowException(DescribeError(error));
+    }
+
+    /// <summary>The token in a token response, or null when the response is an error.</summary>
+    private static GitHubToken? ReadToken(JsonElement root)
+    {
+        string accessToken = GitHubHttp.GetString(root, "access_token");
+        if (accessToken.Length == 0)
+        {
+            return null;
+        }
+
+        string refreshToken = GitHubHttp.GetString(root, "refresh_token");
+        return new GitHubToken(
+            accessToken,
+            root.TryGetProperty("expires_in", out var expiresIn) && expiresIn.ValueKind == JsonValueKind.Number
+                ? DateTimeOffset.UtcNow.AddSeconds(expiresIn.GetInt32())
+                : null,
+            refreshToken.Length > 0 ? refreshToken : null);
     }
 
     private static async Task<JsonDocument> PostFormAsync(string url, Dictionary<string, string> form, CancellationToken cancellationToken)

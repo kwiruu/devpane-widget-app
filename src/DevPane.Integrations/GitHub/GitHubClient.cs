@@ -24,7 +24,7 @@ public sealed class GitHubClient(string accessToken)
           mine: search(query: $mine, type: ISSUE, first: $first) { issueCount nodes { ...pr } }
           issues: search(query: $issues, type: ISSUE, first: $first) {
             issueCount
-            nodes { ... on Issue { number title url repository { nameWithOwner } } }
+            nodes { ... on Issue { number title url updatedAt repository { nameWithOwner } } }
           }
         }
         fragment pr on PullRequest {
@@ -356,7 +356,8 @@ public sealed class GitHubClient(string accessToken)
                 number.GetInt32(),
                 GitHubHttp.GetString(node, "title"),
                 GitHubHttp.GetString(node, "url"),
-                GitHubHttp.GetString(node.GetProperty("repository"), "nameWithOwner")));
+                GitHubHttp.GetString(node.GetProperty("repository"), "nameWithOwner"),
+                GitHubHttp.GetTime(node, "updatedAt")));
         }
 
         return new SearchResult<IssueItem>(search.GetProperty("issueCount").GetInt32(), items);

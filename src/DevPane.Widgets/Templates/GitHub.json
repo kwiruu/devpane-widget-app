@@ -5,7 +5,14 @@
   "body": [
     {
       "type": "Container",
+      "$when": "${state != 'signedIn'}",
       "minHeight": "14px",
+      "items": []
+    },
+    {
+      "type": "Container",
+      "$when": "${state == 'signedIn'}",
+      "minHeight": "6px",
       "items": []
     },
     {
@@ -111,7 +118,7 @@
                           "type": "ColumnSet",
                           "columns": [
                             { "type": "Column", "width": "auto", "verticalContentAlignment": "center", "items": [ { "type": "Image", "url": "${icon}", "width": "14px", "height": "14px", "altText": "" } ] },
-                            { "type": "Column", "width": "stretch", "spacing": "small", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "${label}", "size": "small", "isSubtle": true, "maxLines": 1 } ] }
+                            { "type": "Column", "width": "stretch", "spacing": "medium", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "${label}", "size": "small", "isSubtle": true, "maxLines": 1 } ] }
                           ]
                         },
                         {
@@ -174,7 +181,11 @@
                   ]
                 },
                 {
-                  "type": "Column", "$when": "${status != ''}", "width": "auto", "spacing": "small", "verticalContentAlignment": "center",
+                  "type": "Column", "$when": "${hasStatusIcon}", "width": "auto", "spacing": "small", "verticalContentAlignment": "center",
+                  "items": [ { "type": "Image", "url": "${statusIcon}", "width": "16px", "height": "16px", "altText": "${status}" } ]
+                },
+                {
+                  "type": "Column", "$when": "${!hasStatusIcon && status != ''}", "width": "auto", "spacing": "small", "verticalContentAlignment": "center",
                   "items": [
                     {
                       "type": "ColumnSet",

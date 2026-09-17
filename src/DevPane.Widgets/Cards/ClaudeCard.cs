@@ -8,8 +8,8 @@ namespace DevPane.Widgets.Cards;
 
 /// <summary>
 /// Claude Code usage on this PC: the current five-hour session and the week, as percent used when Claude reports it
-/// (through Claude Code's status line) and as usage at API prices otherwise. Large adds the last seven days and the top
-/// projects today.
+/// (through Claude Code's status line) and as usage at API prices otherwise. Medium adds the last seven days, and large
+/// adds the top projects today.
 /// </summary>
 internal sealed class ClaudeCard : PollingCard<ClaudeUsageSummary>
 {
@@ -86,16 +86,19 @@ internal sealed class ClaudeCard : PollingCard<ClaudeUsageSummary>
 
         data["limits"] = new JsonArray
         {
-            Limit("Current session", "Session", usage.Session, isWeek: false, first: true, Amount, now, light),
-            Limit(usage.Week.ResetsAt is null ? "Last 7 days" : "This week", "Week", usage.Week, isWeek: true, first: false, Amount, now, light),
+            Limit("Current session", usage.Session, isWeek: false, first: true, Amount, now, light),
+            Limit(usage.Week.ResetsAt is null ? "Last 7 days" : "This week", usage.Week, isWeek: true, first: false, Amount, now, light),
         };
 
         DescribeFooter(data, usage, Amount(usage.Today.Cost, usage.Today.Tokens), now, light);
 
-        if (Size != WidgetSize.Large)
+        if (Size == WidgetSize.Small)
         {
             return data;
         }
+
+        // Medium has less height, so its sections sit closer together.
+        data["gap"] = Size == WidgetSize.Large ? "large" : "medium";
 
         var days = usage.LastSevenDays;
         data["chartTitle"] = byCost ? "Last 7 days at API prices" : "Last 7 days, tokens";
@@ -111,6 +114,11 @@ internal sealed class ClaudeCard : PollingCard<ClaudeUsageSummary>
             })
             .ToArray());
 
+        if (Size != WidgetSize.Large)
+        {
+            return data;
+        }
+
         var projects = usage.ProjectsToday.Take(MaxProjects).ToList();
         data["hasProjects"] = projects.Count > 0;
         data["projects"] = new JsonArray(projects
@@ -125,12 +133,12 @@ internal sealed class ClaudeCard : PollingCard<ClaudeUsageSummary>
     }
 
     /// <summary>
-    /// One limit, like Claude's usage page: a title with percent used, a progress bar, and when it resets. Without a
-    /// percentage from Claude, it shows usage at API prices instead of the bar.
+    /// One limit. Large shows it like Claude's usage page: a row with percent used, a full-width progress bar, and when it
+    /// resets. Small and medium show the two limits side by side, each with a big number. Without a percentage from
+    /// Claude, the number is usage at API prices and there's no bar.
     /// </summary>
-    private JsonObject Limit(
+    private static JsonObject Limit(
         string title,
-        string shortTitle,
         ClaudeUsagePeriod? period,
         bool isWeek,
         bool first,
@@ -139,7 +147,6 @@ internal sealed class ClaudeCard : PollingCard<ClaudeUsageSummary>
         bool light)
     {
         var culture = CultureInfo.CurrentCulture;
-        bool small = Size == WidgetSize.Small;
         int? percent = period?.Percent;
         LabelTone? warning = percent switch
         {
@@ -148,30 +155,38 @@ internal sealed class ClaudeCard : PollingCard<ClaudeUsageSummary>
             _ => null,
         };
 
-        string value = period switch
-        {
-            null => Format.Missing,
-            { Percent: { } used } => small ? $"{used.ToString(culture)}%" : $"{used.ToString(culture)}% used",
-            _ => amount(period.Cost, period.Tokens),
-        };
-
-        // Small fits the reset time on the title line; medium and large give it a line of its own.
         string approximately = period?.ResetIsEstimate == true ? "~" : string.Empty;
-        string? shortReset = period?.ResetsAt is { } resetsAt
-            ? approximately + (isWeek ? $"{resetsAt.ToString("ddd", culture)} {resetsAt.ToString("t", culture)}" : resetsAt.ToString("t", culture))
-            : null;
+        string shortCaption = period switch
+        {
+            null => "Not started",
+            { ResetsAt: { } resetsAt } when isWeek =>
+                $"Resets {approximately}{resetsAt.ToString("ddd", culture)} {resetsAt.ToString("t", culture)}",
+            { ResetsAt: { } resetsAt } => $"Resets {approximately}{resetsAt.ToString("t", culture)}",
+            _ => "On this PC",
+        };
 
         return new JsonObject
         {
-            ["title"] = small && shortReset is not null ? $"{shortTitle} · {shortReset}" : small ? shortTitle : title,
-            ["titleSize"] = small ? "small" : "default",
-            ["value"] = value,
+            ["title"] = title,
+            ["value"] = period switch
+            {
+                null => Format.Missing,
+                { Percent: { } used } => $"{used.ToString(culture)}% used",
+                _ => amount(period.Cost, period.Tokens),
+            },
+            ["bigValue"] = period switch
+            {
+                null => Format.Missing,
+                { Percent: { } used } => $"{used.ToString(culture)}%",
+                _ => amount(period.Cost, period.Tokens),
+            },
             ["valueColor"] = warning is { } tone ? CardStyle.TextColor(tone) : "default",
             ["hasBar"] = percent is not null,
             ["bar"] = percent is { } filled
                 ? UsageCharts.Progress(filled, warning is { } barTone ? CardStyle.ToneColor(barTone, light) : ClaudeOrange, light)
                 : string.Empty,
-            ["caption"] = small ? string.Empty : DescribeReset(period, isWeek, now),
+            ["caption"] = DescribeReset(period, isWeek, now),
+            ["shortCaption"] = shortCaption,
             ["spacing"] = first ? "default" : "large",
         };
     }

@@ -41,7 +41,7 @@ internal sealed class ContributionsCard : GitHubCardBase<ContributionsCard.Readi
     protected override async ValueTask<Reading> TakeSampleAsync()
     {
         var latest = Latest;
-        if (GitHubSession.Client is not { } client)
+        if (await GitHubSession.GetClientAsync() is not { } client)
         {
             return new Reading(null, null, null);
         }

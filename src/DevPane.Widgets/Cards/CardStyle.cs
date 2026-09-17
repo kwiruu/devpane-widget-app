@@ -49,6 +49,33 @@ internal static class CardStyle
         _ => "default",
     };
 
+    /// <summary>A 16px status icon in GitHub's status colors: check, cross, or dot.</summary>
+    public static string StatusIcon(LabelTone tone, bool light)
+    {
+        string color = ToneColor(tone, light);
+        string shape = tone switch
+        {
+            LabelTone.Success => $"<circle cx='8' cy='8' r='7' fill='{color}'/><path d='M4.7 8.2l2.1 2.1 4.5-4.6' fill='none' stroke='#FFFFFF' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/>",
+            LabelTone.Danger => $"<circle cx='8' cy='8' r='7' fill='{color}'/><path d='M5.6 5.6l4.8 4.8M10.4 5.6l-4.8 4.8' stroke='#FFFFFF' stroke-width='1.7' stroke-linecap='round'/>",
+            LabelTone.Attention => $"<circle cx='8' cy='8' r='6.2' fill='none' stroke='{color}' stroke-width='1.6'/><circle cx='8' cy='8' r='3' fill='{color}'/>",
+            _ => $"<circle cx='8' cy='8' r='6.2' fill='none' stroke='{color}' stroke-width='1.6'/>",
+        };
+
+        return DataUri($"<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'>{shape}</svg>");
+    }
+
+    /// <summary>
+    /// A button as three columns: rounded ends exactly the column size (6px x 36px in the templates), and a flat middle
+    /// that can cover any width.
+    /// </summary>
+    public static (string Left, string Fill, string Right) Button(string color)
+    {
+        const int endWidth = 6;
+        const int height = 36;
+        string paint = $"fill='{color}'";
+        return (EndImage(paint, endWidth, height, left: true), FillImage(paint), EndImage(paint, endWidth, height, left: false));
+    }
+
     /// <summary>
     /// A tinted, rounded surface behind a tile or pill: images for its left end, middle, and right end columns. The
     /// corner radius is the end width, so ends half the height wide make a fully round pill.
@@ -67,8 +94,9 @@ internal static class CardStyle
 
     /// <summary>A rounded end: a rectangle twice the image's width, with the image showing only its left or right half.</summary>
     /// <param name="paint">SVG fill attributes, such as <c>fill='#2A7AEF'</c>.</param>
-    public static string EndImage(string paint, int width, int height, bool left) => DataUri(string.Create(CultureInfo.InvariantCulture,
-        $"<svg xmlns='http://www.w3.org/2000/svg' width='{width}' height='{height}'><rect x='{(left ? 0 : -width)}' width='{width * 2}' height='{height}' rx='{width}' {paint}/></svg>"));
+    /// <param name="radius">The corner radius; defaults to the end's width. A smaller radius leaves the rest of the end as padding.</param>
+    public static string EndImage(string paint, int width, int height, bool left, int? radius = null) => DataUri(string.Create(CultureInfo.InvariantCulture,
+        $"<svg xmlns='http://www.w3.org/2000/svg' width='{width}' height='{height}'><rect x='{(left ? 0 : -width)}' width='{width * 2}' height='{height}' rx='{radius ?? width}' {paint}/></svg>"));
 
     /// <summary>A flat fill for a middle column. Solid, so scaling it to cover any size looks the same.</summary>
     public static string FillImage(string paint) =>

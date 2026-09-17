@@ -5,8 +5,8 @@ Dev Pane includes the following third-party material.
 ## Octicons
 
 The cards draw icons from [Octicons](https://github.com/primer/octicons) (code-review, git-pull-request,
-git-pull-request-draft, issue-opened, workflow, sync, calendar, hourglass, clock, and mark-github). The GitHub mark is
-also subject to [GitHub's logo guidelines](https://github.com/logos).
+git-pull-request-draft, issue-opened, workflow, sync, calendar, hourglass, clock, globe, git-branch, git-commit,
+share, list-unordered, check, terminal, and mark-github). The GitHub mark is also subject to [GitHub's logo guidelines](https://github.com/logos).
 
 ```
 MIT License

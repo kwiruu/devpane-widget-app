@@ -40,7 +40,8 @@ public sealed record PullRequestItem(
     ReviewDecision Review,
     DateTimeOffset? UpdatedAt);
 
-public sealed record IssueItem(int Number, string Title, string Url, string Repository);
+/// <param name="UpdatedAt">When the issue last changed, or null if GitHub didn't say.</param>
+public sealed record IssueItem(int Number, string Title, string Url, string Repository, DateTimeOffset? UpdatedAt);
 
 /// <param name="UpdatedAt">When the run last changed, or null if GitHub didn't say.</param>
 public sealed record WorkflowRunItem(

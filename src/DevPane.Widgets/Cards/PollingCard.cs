@@ -62,6 +62,9 @@ internal abstract class PollingCard<TSnapshot> : CardBase
     /// <summary>Samples right away instead of waiting for the next tick, for example when the user asks to refresh.</summary>
     protected void RefreshNow() => _ = SampleAsync();
 
+    /// <summary>False to skip updating the card after a sample, for example while the user types in its inputs.</summary>
+    protected virtual bool PushAfterSample => true;
+
     /// <summary>Runs after each sample is stored, just before the card is updated.</summary>
     protected virtual void OnSampleTaken()
     {
@@ -91,7 +94,7 @@ internal abstract class PollingCard<TSnapshot> : CardBase
             }
 
             OnSampleTaken();
-            if (IsActive)
+            if (IsActive && PushAfterSample)
             {
                 Push(includeTemplate: false);
             }

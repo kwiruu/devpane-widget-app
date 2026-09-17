@@ -12,8 +12,8 @@ Developer cards for the Windows 11 Widgets Board. Press **Win + W**, click **+**
 | Local dev | Dev servers on your ports, dev tool memory, WSL/Docker memory | In progress (M1) |
 | GitHub | Reviews waiting for you, your PRs with CI status, assigned issues, workflow runs; one card per repo if you like | In progress (M2) |
 | GitHub contributions | Your contribution calendar, current and longest streak | In progress (M2) |
-| Claude usage | Spend and tokens (Claude Code and the Admin API) | Planned (v2) |
-| Vercel | Latest deployment per project | Planned (v2) |
+| Claude Code usage | Current session and weekly usage with reset times, last 7 days at API prices | In progress |
+| Vercel | Latest deployments and production status per project; one card per team or project if you like | In progress |
 
 ## Build and run
 
@@ -61,6 +61,16 @@ The license text is the authority; this summary isn't legal advice.
 ### Name and logo
 
 The name "Dev Pane" and its logo aren't covered by the license. Forks must use a different name and logo.
+
+### Third-party logos
+
+Some cards show other companies' logos, which belong to them and aren't covered by the license:
+
+- **GitHub mark** on the GitHub cards, used under [GitHub's logo guidelines](https://github.com/logos).
+- **Claude Spark** on the Claude Code usage card, from [Anthropic's press kit](https://www.anthropic.com/news). Anthropic doesn't publish terms for using it in other apps, so get Anthropic's permission before a public release, or replace it with Dev Pane's own icon.
+- **Vercel logomark** on the Vercel card. [Vercel's brand guidelines](https://vercel.com/geist/brands) require Vercel's written permission to use it in other apps, so get permission before a public release, or replace it with Dev Pane's own icon.
+
+Octicons and other third-party code are listed in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 
 ## Contributing
 
