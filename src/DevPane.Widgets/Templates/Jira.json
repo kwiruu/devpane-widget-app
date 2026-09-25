@@ -1,0 +1,177 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "Container",
+      "$when": "${size != 'small'}",
+      "minHeight": "14px",
+      "items": []
+    },
+    {
+      "type": "Container",
+      "$when": "${state == 'disconnected' && size == 'small'}",
+      "items": [
+        { "type": "Image", "url": "${mark}", "width": "28px", "horizontalAlignment": "center", "altText": "" },
+        { "type": "TextBlock", "text": "Connect Jira", "weight": "bolder", "horizontalAlignment": "center", "spacing": "small" },
+        { "type": "TextBlock", "text": "Resize to medium to connect.", "size": "small", "isSubtle": true, "horizontalAlignment": "center", "maxLines": 1, "spacing": "none" }
+      ]
+    },
+    {
+      "type": "Container",
+      "$when": "${state == 'disconnected' && size != 'small'}",
+      "minHeight": "${centerHeight}",
+      "verticalContentAlignment": "center",
+      "items": [
+        { "type": "Image", "$when": "${size == 'large'}", "url": "${mark}", "width": "40px", "horizontalAlignment": "center", "altText": "" },
+        { "type": "TextBlock", "text": "Connect Jira", "size": "large", "weight": "bolder", "horizontalAlignment": "center", "spacing": "medium" },
+        { "type": "TextBlock", "$when": "${size == 'large' && notice == ''}", "text": "Sign in with an Atlassian API token.", "size": "small", "isSubtle": true, "horizontalAlignment": "center", "spacing": "small" },
+        { "type": "TextBlock", "$when": "${notice != ''}", "text": "${notice}", "size": "small", "color": "attention", "wrap": true, "maxLines": 2, "horizontalAlignment": "center", "spacing": "small" },
+        { "type": "Input.Text", "id": "site", "placeholder": "your-site.atlassian.net", "spacing": "medium" },
+        { "type": "Input.Text", "id": "email", "style": "email", "placeholder": "you@company.com", "spacing": "small" },
+        { "type": "Input.Text", "id": "token", "style": "password", "placeholder": "API token", "spacing": "small" },
+        {
+          "type": "ColumnSet",
+          "spacing": "small",
+          "selectAction": { "type": "Action.Execute", "verb": "connect", "title": "Connect Jira", "associatedInputs": "auto" },
+          "columns": [
+            { "type": "Column", "width": "6px", "minHeight": "36px", "backgroundImage": { "url": "${buttonLeft}", "fillMode": "cover" }, "items": [] },
+            {
+              "type": "Column", "width": "stretch", "spacing": "none", "minHeight": "36px", "verticalContentAlignment": "center",
+              "backgroundImage": { "url": "${buttonFill}", "fillMode": "cover" },
+              "items": [ { "type": "TextBlock", "text": "Connect", "weight": "bolder", "color": "${buttonText}", "horizontalAlignment": "center" } ]
+            },
+            { "type": "Column", "width": "6px", "spacing": "none", "minHeight": "36px", "backgroundImage": { "url": "${buttonRight}", "fillMode": "cover" }, "items": [] }
+          ]
+        },
+        {
+          "type": "Container",
+          "$when": "${size == 'large' || notice == ''}",
+          "spacing": "small",
+          "selectAction": { "type": "Action.OpenUrl", "url": "${tokensUrl}", "title": "Create an Atlassian API token" },
+          "items": [ { "type": "TextBlock", "text": "Create an API token", "size": "small", "isSubtle": true, "horizontalAlignment": "center" } ]
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "$when": "${state == 'checking'}",
+      "minHeight": "${centerHeight}",
+      "verticalContentAlignment": "center",
+      "items": [
+        { "type": "Image", "url": "${mark}", "width": "32px", "horizontalAlignment": "center", "altText": "" },
+        { "type": "TextBlock", "text": "Checking your API token…", "size": "small", "isSubtle": true, "horizontalAlignment": "center", "spacing": "medium" }
+      ]
+    },
+    {
+      "type": "Container",
+      "$when": "${state == 'connected' && size == 'small'}",
+      "selectAction": { "type": "Action.OpenUrl", "url": "${searchUrl}", "title": "Open these issues in Jira" },
+      "items": [
+        { "type": "TextBlock", "text": "${count}", "size": "extraLarge", "weight": "bolder", "maxLines": 1 },
+        { "type": "TextBlock", "text": "${countLabel}", "size": "small", "isSubtle": true, "spacing": "none", "maxLines": 1 },
+        {
+          "type": "ColumnSet",
+          "$data": "${issues}",
+          "spacing": "small",
+          "columns": [
+            { "type": "Column", "width": "auto", "verticalContentAlignment": "center", "items": [ { "type": "Image", "url": "${typeIcon}", "width": "14px", "height": "14px", "altText": "" } ] },
+            { "type": "Column", "width": "stretch", "spacing": "small", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "${summary}", "size": "small", "maxLines": 1 } ] }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "$when": "${state == 'connected' && size != 'small'}",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "$data": "${tiles}",
+              "width": "stretch",
+              "spacing": "small",
+              "selectAction": { "type": "Action.OpenUrl", "url": "${url}", "title": "Open these issues in Jira" },
+              "items": [
+                {
+                  "type": "ColumnSet",
+                  "columns": [
+                    { "type": "Column", "width": "8px", "minHeight": "${height}", "backgroundImage": { "url": "${left}", "fillMode": "cover" }, "items": [] },
+                    {
+                      "type": "Column", "width": "stretch", "spacing": "none", "minHeight": "${height}", "verticalContentAlignment": "center",
+                      "backgroundImage": { "url": "${fill}", "fillMode": "cover" },
+                      "items": [
+                        { "type": "TextBlock", "text": "${label}", "size": "small", "isSubtle": true, "maxLines": 1 },
+                        { "type": "TextBlock", "text": "${value}", "size": "large", "weight": "bolder", "spacing": "none", "maxLines": 1 }
+                      ]
+                    },
+                    { "type": "Column", "width": "8px", "spacing": "none", "minHeight": "${height}", "backgroundImage": { "url": "${right}", "fillMode": "cover" }, "items": [] }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        { "type": "TextBlock", "$when": "${!hasIssues}", "text": "${empty}", "size": "small", "isSubtle": true, "spacing": "medium" },
+        {
+          "type": "Container",
+          "$when": "${hasIssues}",
+          "spacing": "medium",
+          "items": [
+            {
+              "type": "Container",
+              "$data": "${issues}",
+              "spacing": "${spacing}",
+              "selectAction": { "type": "Action.OpenUrl", "url": "${url}", "title": "Open in Jira" },
+              "items": [
+                {
+                  "type": "ColumnSet",
+                  "columns": [
+                    { "type": "Column", "width": "auto", "verticalContentAlignment": "center", "items": [ { "type": "Image", "url": "${typeIcon}", "width": "16px", "height": "16px", "altText": "" } ] },
+                    { "type": "Column", "width": "stretch", "spacing": "small", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "${summary}", "size": "small", "weight": "bolder", "maxLines": 1 } ] },
+                    {
+                      "type": "Column", "width": "auto", "spacing": "small", "verticalContentAlignment": "center",
+                      "items": [
+                        {
+                          "type": "ColumnSet",
+                          "columns": [
+                            { "type": "Column", "width": "6px", "minHeight": "20px", "backgroundImage": { "url": "${statusLeft}", "fillMode": "cover" }, "items": [] },
+                            { "type": "Column", "width": "auto", "spacing": "none", "minHeight": "20px", "verticalContentAlignment": "center", "backgroundImage": { "url": "${statusFill}", "fillMode": "cover" }, "items": [ { "type": "TextBlock", "text": "${status}", "size": "small", "weight": "bolder", "color": "${statusColor}", "maxLines": 1 } ] },
+                            { "type": "Column", "width": "6px", "spacing": "none", "minHeight": "20px", "backgroundImage": { "url": "${statusRight}", "fillMode": "cover" }, "items": [] }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "ColumnSet",
+                  "spacing": "none",
+                  "columns": [
+                    { "type": "Column", "width": "16px", "items": [] },
+                    { "type": "Column", "width": "auto", "spacing": "small", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "${key}", "size": "small", "isSubtle": true } ] },
+                    { "type": "Column", "width": "stretch", "spacing": "small", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "${project}", "size": "small", "isSubtle": true, "maxLines": 1 } ] },
+                    { "type": "Column", "$when": "${due != ''}", "width": "auto", "spacing": "small", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "${due}", "size": "small", "color": "${dueColor}", "isSubtle": "${dueSubtle}" } ] },
+                    { "type": "Column", "$when": "${hasPriority}", "width": "auto", "spacing": "small", "verticalContentAlignment": "center", "items": [ { "type": "Image", "url": "${priorityIcon}", "width": "14px", "height": "14px", "altText": "" } ] }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "ColumnSet",
+          "spacing": "medium",
+          "selectAction": { "type": "Action.Execute", "verb": "refresh", "title": "Refresh" },
+          "columns": [
+            { "type": "Column", "width": "stretch", "verticalContentAlignment": "center", "items": [ { "type": "TextBlock", "text": "${footer}", "size": "small", "isSubtle": true, "maxLines": 1 } ] },
+            { "type": "Column", "width": "auto", "verticalContentAlignment": "center", "items": [ { "type": "Image", "url": "${syncIcon}", "width": "14px", "height": "14px", "altText": "Refresh" } ] }
+          ]
+        }
+      ]
+    }
+  ]
+}

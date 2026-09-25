@@ -14,6 +14,9 @@ internal sealed class TokenVault(string resource, string userName)
 
     public static TokenVault Vercel { get; } = new("DevPane.Vercel", "vercel");
 
+    /// <summary>The Jira site, email, and API token, saved together as JSON.</summary>
+    public static TokenVault Jira { get; } = new("DevPane.Jira", "jira");
+
     public string? Load()
     {
         try

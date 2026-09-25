@@ -1,0 +1,53 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "Container",
+      "minHeight": "6px",
+      "items": []
+    },
+    { "type": "TextBlock", "text": "Show", "weight": "bolder" },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "view",
+      "style": "compact",
+      "value": "${view}",
+      "choices": [
+        { "title": "Issues assigned to you", "value": "assigned" },
+        { "title": "Your issues in the current sprint", "value": "sprint" },
+        { "title": "Issues you reported", "value": "reported" },
+        { "title": "Issues you watch", "value": "watching" }
+      ]
+    },
+    { "type": "TextBlock", "text": "From", "weight": "bolder", "spacing": "medium" },
+    { "type": "TextBlock", "$when": "${loading}", "text": "Loading your projects…", "size": "small", "isSubtle": true },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "project",
+      "style": "compact",
+      "value": "${project}",
+      "choices": [
+        { "title": "All projects", "value": "all" },
+        { "$data": "${projects}", "title": "${title}", "value": "${value}" }
+      ]
+    },
+    {
+      "type": "Container",
+      "$when": "${connected}",
+      "spacing": "large",
+      "items": [
+        { "type": "TextBlock", "text": "Connected to ${site}", "size": "small", "isSubtle": true, "wrap": true },
+        {
+          "type": "ActionSet",
+          "actions": [ { "type": "Action.Execute", "title": "Disconnect Jira", "verb": "disconnect" } ]
+        }
+      ]
+    }
+  ],
+  "actions": [
+    { "type": "Action.Execute", "title": "Save", "verb": "saveCustomization" },
+    { "type": "Action.Execute", "title": "Cancel", "verb": "cancelCustomization" }
+  ]
+}

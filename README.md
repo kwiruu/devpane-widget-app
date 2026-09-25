@@ -14,6 +14,7 @@ Developer cards for the Windows 11 Widgets Board. Press **Win + W**, click **+**
 | GitHub contributions | Your contribution calendar, current and longest streak | In progress (M2) |
 | Claude Code usage | Current session and weekly usage with reset times, last 7 days at API prices | In progress |
 | Vercel | Latest deployments and production status per project; one card per team or project if you like | In progress |
+| Jira | Issues assigned to you, your current sprint, reported, or watched, with counts by status; one card per view or project if you like | In progress |
 
 ## Build and run
 

@@ -15,6 +15,7 @@ internal static class CardFactory
         ContributionsCard.DefinitionId => new ContributionsCard(context, customState),
         ClaudeCard.DefinitionId => new ClaudeCard(context, customState),
         VercelCard.DefinitionId => new VercelCard(context, customState),
+        JiraCard.DefinitionId => new JiraCard(context, customState),
         _ => null,
     };
 }

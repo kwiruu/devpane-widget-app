@@ -274,6 +274,35 @@
                       </LightMode>
                     </ThemeResources>
                   </Definition>
+                  <!-- AllowMultiple and IsCustomizable: pin one card per view or project. -->
+                  <Definition
+                    Id="Jira"
+                    DisplayName="Jira"
+                    Description="Your Jira issues: assigned to you, the current sprint, reported, or watched"
+                    AllowMultiple="true"
+                    IsCustomizable="true">
+                    <Capabilities>
+                      <Capability>
+                        <Size Name="small" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="medium" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="large" />
+                      </Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="Assets\Widgets\Jira_Icon.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="Assets\Widgets\Jira_Screenshot.png" DisplayAltText="Jira card with issue counts by status and your open issues" />
+                      </Screenshots>
+                      <DarkMode />
+                      <LightMode />
+                    </ThemeResources>
+                  </Definition>
                 </Definitions>
               </WidgetProvider>
             </uap3:Properties>
