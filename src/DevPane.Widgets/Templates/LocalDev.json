@@ -9,27 +9,111 @@
       "$data": "${servers}",
       "spacing": "small",
       "columns": [
-        { "type": "Column", "width": "auto", "items": [ { "type": "TextBlock", "text": "${port}", "fontType": "monospace", "weight": "bolder", "size": "small" } ] },
-        { "type": "Column", "width": "stretch", "items": [ { "type": "TextBlock", "text": "${name}", "size": "small" } ] },
-        { "type": "Column", "width": "auto", "items": [ { "type": "TextBlock", "$when": "${exposed}", "text": "On network", "size": "small", "color": "warning" } ] }
+        {
+          "type": "Column",
+          "width": "8px",
+          "minHeight": "${$root.rowHeight}",
+          "backgroundImage": { "url": "${$root.rowLeft}", "fillMode": "cover" },
+          "items": []
+        },
+        {
+          "type": "Column",
+          "width": "stretch",
+          "spacing": "none",
+          "minHeight": "${$root.rowHeight}",
+          "verticalContentAlignment": "center",
+          "backgroundImage": { "url": "${$root.rowFill}", "fillMode": "cover" },
+          "items": [
+            {
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "auto",
+                  "verticalContentAlignment": "center",
+                  "items": [ { "type": "Image", "url": "${$root.dot}", "width": "6px", "altText": "" } ]
+                },
+                {
+                  "type": "Column",
+                  "width": "auto",
+                  "spacing": "small",
+                  "items": [ { "type": "TextBlock", "text": "${port}", "fontType": "monospace", "weight": "bolder", "size": "small" } ]
+                },
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "spacing": "small",
+                  "items": [ { "type": "TextBlock", "text": "${name}", "size": "small", "isSubtle": true } ]
+                },
+                {
+                  "type": "Column",
+                  "width": "auto",
+                  "items": [ { "type": "TextBlock", "$when": "${exposed}", "text": "On network", "size": "small", "color": "warning" } ]
+                }
+              ]
+            },
+            {
+              "type": "TextBlock",
+              "$when": "${$root.showUrls}",
+              "text": "${url}",
+              "fontType": "monospace",
+              "size": "small",
+              "isSubtle": true,
+              "spacing": "none"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "8px",
+          "spacing": "none",
+          "minHeight": "${$root.rowHeight}",
+          "backgroundImage": { "url": "${$root.rowRight}", "fillMode": "cover" },
+          "items": []
+        }
       ]
     },
     { "type": "TextBlock", "$when": "${moreServers != ''}", "text": "${moreServers}", "size": "small", "isSubtle": true, "spacing": "small" },
     {
       "type": "Container",
       "$when": "${size == 'large'}",
-      "separator": true,
       "spacing": "medium",
       "items": [
-        { "type": "TextBlock", "text": "Dev processes", "size": "small", "isSubtle": true },
+        { "type": "TextBlock", "text": "Holding the most memory", "size": "small", "isSubtle": true },
         { "type": "TextBlock", "$when": "${!hasProcesses}", "text": "None running", "size": "small", "spacing": "small" },
         {
-          "type": "ColumnSet",
+          "type": "Container",
           "$data": "${processes}",
           "spacing": "small",
-          "columns": [
-            { "type": "Column", "width": "stretch", "items": [ { "type": "TextBlock", "text": "${name}", "size": "small" } ] },
-            { "type": "Column", "width": "auto", "items": [ { "type": "TextBlock", "text": "${memory}", "size": "small", "weight": "bolder" } ] }
+          "items": [
+            {
+              "type": "ColumnSet",
+              "columns": [
+                { "type": "Column", "width": "stretch", "items": [ { "type": "TextBlock", "text": "${name}", "size": "small" } ] },
+                { "type": "Column", "width": "auto", "items": [ { "type": "TextBlock", "text": "${memory}", "size": "small", "weight": "bolder" } ] }
+              ]
+            },
+            {
+              "type": "ColumnSet",
+              "spacing": "none",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "${share}",
+                  "minHeight": "4px",
+                  "backgroundImage": { "url": "${$root.barFill}", "fillMode": "cover" },
+                  "items": []
+                },
+                {
+                  "type": "Column",
+                  "width": "${rest}",
+                  "spacing": "none",
+                  "minHeight": "4px",
+                  "backgroundImage": { "url": "${$root.barTrack}", "fillMode": "cover" },
+                  "items": []
+                }
+              ]
+            }
           ]
         },
         {
