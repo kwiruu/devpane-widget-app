@@ -6,7 +6,6 @@ using DevPane.Integrations.Vercel;
 using DevPane.Integrations.Web;
 using DevPane.Widgets.Vercel;
 using Microsoft.Windows.Widgets;
-using Microsoft.Windows.Widgets.Providers;
 
 namespace DevPane.Widgets.Cards;
 
@@ -55,8 +54,8 @@ internal sealed class VercelCard : PollingCard<VercelCard.Reading>
     // A finished deployment's build log doesn't change, so it's fetched once.
     private (string DeploymentId, IReadOnlyList<VercelLogLine> Lines)? _finishedLog;
 
-    public VercelCard(WidgetContext context, string? customState)
-        : base(context, customState)
+    public VercelCard(string id, WidgetSize size, string? customState)
+        : base(id, size, customState)
     {
         _scope = Scope.Read(customState);
         VercelSession.Changed += OnSessionChanged;

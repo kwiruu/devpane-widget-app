@@ -8,12 +8,19 @@
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   IgnorableNamespaces="uap uap3 uap5 com rescap">
 
-  <!-- Development identity. The Microsoft Store replaces Name and Publisher at release. -->
-  <Identity Name="DevPane" Publisher="CN=DevPane Dev" Version="0.1.0.0" />
+  <!--
+    Store identity, from Partner Center > Dev Pane > Product management > Product identity. Don't change these:
+    they're what ties a package to the reserved app, Partner Center rejects an upload whose identity doesn't
+    match, and a published product's identity can't be changed afterwards. Store ID 9NTM1R4TD2TT.
+
+    The fourth part of Version belongs to the Store and has to stay 0. tools\deploy-dev.ps1 puts its own
+    number there for local installs, so Windows treats each dev build as an update.
+  -->
+  <Identity Name="KeiruCabili.DevPane" Publisher="CN=D3E591D2-F191-488D-A347-256754C0415A" Version="1.0.0.0" />
 
   <Properties>
     <DisplayName>Dev Pane</DisplayName>
-    <PublisherDisplayName>Dev Pane</PublisherDisplayName>
+    <PublisherDisplayName>Keiru Cabili</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -53,13 +60,19 @@
           </com:ComServer>
         </com:Extension>
 
-        <!-- Registers Dev Pane with the Widgets Board. Each Definition is one card in the + dialog. -->
+        <!--
+          Registers Dev Pane with the Widgets Board. Each Definition is one card in the + dialog.
+
+          Every Path below has to be a real file at that exact path: the board opens them itself rather than
+          going through resources.pri, so the scale-qualified store logos are invisible to it, and
+          ProviderIcons points at its own copy of the logo instead of at Assets\StoreLogo.png.
+        -->
         <uap3:Extension Category="windows.appExtension">
           <uap3:AppExtension Name="com.microsoft.windows.widgets" DisplayName="Dev Pane" Id="DevPaneWidgets" PublicFolder="Public">
             <uap3:Properties>
               <WidgetProvider>
                 <ProviderIcons>
-                  <Icon Path="Assets\StoreLogo.png" />
+                  <Icon Path="Assets\Widgets\DevPane_Icon.png" />
                 </ProviderIcons>
                 <Activation>
                   <CreateInstance ClassId="0486BD7C-EC81-47F7-80BB-289792540301" />
@@ -81,15 +94,30 @@
                         <Size Name="large" />
                       </Capability>
                     </Capabilities>
+                    <!-- The icon is a bare glyph, so it needs the lifted tint to stay legible on a dark board. -->
                     <ThemeResources>
                       <Icons>
-                        <Icon Path="Assets\Widgets\SystemStats_Icon.png" />
+                        <Icon Path="Assets\Widgets\SystemStats_Icon_Light.png" />
                       </Icons>
                       <Screenshots>
-                        <Screenshot Path="Assets\Widgets\SystemStats_Screenshot.png" DisplayAltText="System stats card showing CPU, RAM and GPU usage" />
+                        <Screenshot Path="Assets\Widgets\SystemStats_Screenshot_Dark.png" DisplayAltText="System stats card showing CPU, RAM and GPU usage" />
                       </Screenshots>
-                      <DarkMode />
-                      <LightMode />
+                      <DarkMode>
+                        <Icons>
+                          <Icon Path="Assets\Widgets\SystemStats_Icon_Dark.png" />
+                        </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Assets\Widgets\SystemStats_Screenshot_Dark.png" DisplayAltText="System stats card showing CPU, RAM and GPU usage" />
+                        </Screenshots>
+                      </DarkMode>
+                      <LightMode>
+                        <Icons>
+                          <Icon Path="Assets\Widgets\SystemStats_Icon_Light.png" />
+                        </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Assets\Widgets\SystemStats_Screenshot_Light.png" DisplayAltText="System stats card showing CPU, RAM and GPU usage" />
+                        </Screenshots>
+                      </LightMode>
                     </ThemeResources>
                   </Definition>
                   <Definition
@@ -110,13 +138,27 @@
                     </Capabilities>
                     <ThemeResources>
                       <Icons>
-                        <Icon Path="Assets\Widgets\LocalDev_Icon.png" />
+                        <Icon Path="Assets\Widgets\LocalDev_Icon_Light.png" />
                       </Icons>
                       <Screenshots>
-                        <Screenshot Path="Assets\Widgets\LocalDev_Screenshot.png" DisplayAltText="Local dev card listing dev servers and their ports" />
+                        <Screenshot Path="Assets\Widgets\LocalDev_Screenshot_Dark.png" DisplayAltText="Local dev card listing dev servers and their ports" />
                       </Screenshots>
-                      <DarkMode />
-                      <LightMode />
+                      <DarkMode>
+                        <Icons>
+                          <Icon Path="Assets\Widgets\LocalDev_Icon_Dark.png" />
+                        </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Assets\Widgets\LocalDev_Screenshot_Dark.png" DisplayAltText="Local dev card listing dev servers and their ports" />
+                        </Screenshots>
+                      </DarkMode>
+                      <LightMode>
+                        <Icons>
+                          <Icon Path="Assets\Widgets\LocalDev_Icon_Light.png" />
+                        </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Assets\Widgets\LocalDev_Screenshot_Light.png" DisplayAltText="Local dev card listing dev servers and their ports" />
+                        </Screenshots>
+                      </LightMode>
                     </ThemeResources>
                   </Definition>
                   <!-- AllowMultiple and IsCustomizable: pin one card for all repositories and more for single repositories. -->
@@ -143,14 +185,14 @@
                         <Icon Path="Assets\Widgets\GitHub_Icon_Light.png" />
                       </Icons>
                       <Screenshots>
-                        <Screenshot Path="Assets\Widgets\GitHub_Screenshot.png" DisplayAltText="GitHub card with review requests and pull request status" />
+                        <Screenshot Path="Assets\Widgets\GitHub_Screenshot_Dark.png" DisplayAltText="GitHub card with review requests and pull request status" />
                       </Screenshots>
                       <DarkMode>
                         <Icons>
                           <Icon Path="Assets\Widgets\GitHub_Icon_Dark.png" />
                         </Icons>
                         <Screenshots>
-                          <Screenshot Path="Assets\Widgets\GitHub_Screenshot.png" DisplayAltText="GitHub card with review requests and pull request status" />
+                          <Screenshot Path="Assets\Widgets\GitHub_Screenshot_Dark.png" DisplayAltText="GitHub card with review requests and pull request status" />
                         </Screenshots>
                       </DarkMode>
                       <LightMode>
@@ -158,7 +200,7 @@
                           <Icon Path="Assets\Widgets\GitHub_Icon_Light.png" />
                         </Icons>
                         <Screenshots>
-                          <Screenshot Path="Assets\Widgets\GitHub_Screenshot.png" DisplayAltText="GitHub card with review requests and pull request status" />
+                          <Screenshot Path="Assets\Widgets\GitHub_Screenshot_Light.png" DisplayAltText="GitHub card with review requests and pull request status" />
                         </Screenshots>
                       </LightMode>
                     </ThemeResources>
@@ -184,14 +226,14 @@
                         <Icon Path="Assets\Widgets\GitHub_Icon_Light.png" />
                       </Icons>
                       <Screenshots>
-                        <Screenshot Path="Assets\Widgets\GitHubContributions_Screenshot.png" DisplayAltText="Contribution calendar with current and longest streak" />
+                        <Screenshot Path="Assets\Widgets\GitHubContributions_Screenshot_Dark.png" DisplayAltText="Contribution calendar with current and longest streak" />
                       </Screenshots>
                       <DarkMode>
                         <Icons>
                           <Icon Path="Assets\Widgets\GitHub_Icon_Dark.png" />
                         </Icons>
                         <Screenshots>
-                          <Screenshot Path="Assets\Widgets\GitHubContributions_Screenshot.png" DisplayAltText="Contribution calendar with current and longest streak" />
+                          <Screenshot Path="Assets\Widgets\GitHubContributions_Screenshot_Dark.png" DisplayAltText="Contribution calendar with current and longest streak" />
                         </Screenshots>
                       </DarkMode>
                       <LightMode>
@@ -199,7 +241,7 @@
                           <Icon Path="Assets\Widgets\GitHub_Icon_Light.png" />
                         </Icons>
                         <Screenshots>
-                          <Screenshot Path="Assets\Widgets\GitHubContributions_Screenshot.png" DisplayAltText="Contribution calendar with current and longest streak" />
+                          <Screenshot Path="Assets\Widgets\GitHubContributions_Screenshot_Light.png" DisplayAltText="Contribution calendar with current and longest streak" />
                         </Screenshots>
                       </LightMode>
                     </ThemeResources>
@@ -225,10 +267,24 @@
                         <Icon Path="Assets\Widgets\ClaudeUsage_Icon.png" />
                       </Icons>
                       <Screenshots>
-                        <Screenshot Path="Assets\Widgets\ClaudeUsage_Screenshot.png" DisplayAltText="Claude Code usage card with the current session, this week, and a 7-day chart" />
+                        <Screenshot Path="Assets\Widgets\ClaudeUsage_Screenshot_Dark.png" DisplayAltText="Claude Code usage card with the current session, this week, and a 7-day chart" />
                       </Screenshots>
-                      <DarkMode />
-                      <LightMode />
+                      <DarkMode>
+                        <Icons>
+                          <Icon Path="Assets\Widgets\ClaudeUsage_Icon.png" />
+                        </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Assets\Widgets\ClaudeUsage_Screenshot_Dark.png" DisplayAltText="Claude Code usage card with the current session, this week, and a 7-day chart" />
+                        </Screenshots>
+                      </DarkMode>
+                      <LightMode>
+                        <Icons>
+                          <Icon Path="Assets\Widgets\ClaudeUsage_Icon.png" />
+                        </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Assets\Widgets\ClaudeUsage_Screenshot_Light.png" DisplayAltText="Claude Code usage card with the current session, this week, and a 7-day chart" />
+                        </Screenshots>
+                      </LightMode>
                     </ThemeResources>
                   </Definition>
                   <!-- AllowMultiple and IsCustomizable: pin one card for everything and more for single teams or projects. -->
@@ -254,14 +310,14 @@
                         <Icon Path="Assets\Widgets\Vercel_Icon_Light.png" />
                       </Icons>
                       <Screenshots>
-                        <Screenshot Path="Assets\Widgets\Vercel_Screenshot.png" DisplayAltText="Vercel card listing recent deployments with their status" />
+                        <Screenshot Path="Assets\Widgets\Vercel_Screenshot_Dark.png" DisplayAltText="Vercel card listing recent deployments with their status" />
                       </Screenshots>
                       <DarkMode>
                         <Icons>
                           <Icon Path="Assets\Widgets\Vercel_Icon_Dark.png" />
                         </Icons>
                         <Screenshots>
-                          <Screenshot Path="Assets\Widgets\Vercel_Screenshot.png" DisplayAltText="Vercel card listing recent deployments with their status" />
+                          <Screenshot Path="Assets\Widgets\Vercel_Screenshot_Dark.png" DisplayAltText="Vercel card listing recent deployments with their status" />
                         </Screenshots>
                       </DarkMode>
                       <LightMode>
@@ -269,7 +325,7 @@
                           <Icon Path="Assets\Widgets\Vercel_Icon_Light.png" />
                         </Icons>
                         <Screenshots>
-                          <Screenshot Path="Assets\Widgets\Vercel_Screenshot.png" DisplayAltText="Vercel card listing recent deployments with their status" />
+                          <Screenshot Path="Assets\Widgets\Vercel_Screenshot_Light.png" DisplayAltText="Vercel card listing recent deployments with their status" />
                         </Screenshots>
                       </LightMode>
                     </ThemeResources>
@@ -297,10 +353,24 @@
                         <Icon Path="Assets\Widgets\Jira_Icon.png" />
                       </Icons>
                       <Screenshots>
-                        <Screenshot Path="Assets\Widgets\Jira_Screenshot.png" DisplayAltText="Jira card with issue counts by status and your open issues" />
+                        <Screenshot Path="Assets\Widgets\Jira_Screenshot_Dark.png" DisplayAltText="Jira card with issue counts by status and your open issues" />
                       </Screenshots>
-                      <DarkMode />
-                      <LightMode />
+                      <DarkMode>
+                        <Icons>
+                          <Icon Path="Assets\Widgets\Jira_Icon.png" />
+                        </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Assets\Widgets\Jira_Screenshot_Dark.png" DisplayAltText="Jira card with issue counts by status and your open issues" />
+                        </Screenshots>
+                      </DarkMode>
+                      <LightMode>
+                        <Icons>
+                          <Icon Path="Assets\Widgets\Jira_Icon.png" />
+                        </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Assets\Widgets\Jira_Screenshot_Light.png" DisplayAltText="Jira card with issue counts by status and your open issues" />
+                        </Screenshots>
+                      </LightMode>
                     </ThemeResources>
                   </Definition>
                 </Definitions>

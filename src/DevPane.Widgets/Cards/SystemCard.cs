@@ -1,7 +1,6 @@
 using System.Text.Json.Nodes;
 using DevPane.Integrations.SystemStats;
 using Microsoft.Windows.Widgets;
-using Microsoft.Windows.Widgets.Providers;
 
 namespace DevPane.Widgets.Cards;
 
@@ -32,8 +31,8 @@ internal sealed class SystemCard : PollingCard<SystemCard.Reading>
     private SystemSampler? _sampler;
     private bool _disposed;
 
-    public SystemCard(WidgetContext context, string? customState)
-        : base(context, customState)
+    public SystemCard(string id, WidgetSize size, string? customState)
+        : base(id, size, customState)
     {
     }
 

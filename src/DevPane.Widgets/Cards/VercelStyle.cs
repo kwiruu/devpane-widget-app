@@ -3,19 +3,17 @@ using DevPane.Integrations.Vercel;
 namespace DevPane.Widgets.Cards;
 
 /// <summary>
-/// Vercel's look for the Vercel card: the triangle logomark, Vercel's light-on-dark (or dark-on-light) button, project
+/// The Vercel card's look: a globe for the sign-in screen, Vercel's light-on-dark (or dark-on-light) button, project
 /// card backgrounds, and status rings in Vercel's status colors, drawn with <see cref="CardStyle"/>.
 /// </summary>
-/// <remarks>
-/// The Vercel logomark is Vercel's trademark; see the README's third-party logos section before a public release.
-/// </remarks>
 internal static class VercelStyle
 {
     // Vercel's foreground colors: #EDEDED on dark backgrounds, #171717 on light ones.
     private const string DarkForeground = "#EDEDED";
     private const string LightForeground = "#171717";
 
-    // The Vercel logomark: an equilateral triangle, 1155 wide and 1000 high.
+    // A globe rather than Vercel's triangle: the card is about the sites you have live, and the triangle is
+    // Vercel's trademark. Matches Assets\Widgets\Vercel_Icon_*.png, which tools\generate-widget-icons.cs draws.
     private static readonly string MarkOnDark = MarkImage(DarkForeground);
     private static readonly string MarkOnLight = MarkImage(LightForeground);
 
@@ -137,6 +135,12 @@ internal static class VercelStyle
     private static string TileImage(string color) =>
         CardStyle.DataUri($"<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><rect width='32' height='32' rx='8' fill='{color}'/></svg>");
 
+    // The parallels stop at 12.53 and 87.47, where a line 14 above or below the centre meets a circle of radius 40.
     private static string MarkImage(string color) =>
-        CardStyle.DataUri($"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1155 1000'><path d='m577.3 0 577.4 1000H0z' fill='{color}'/></svg>");
+        CardStyle.DataUri(
+            $"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='{color}' stroke-width='9'>"
+            + "<circle cx='50' cy='50' r='40'/>"
+            + "<ellipse cx='50' cy='50' rx='17' ry='40'/>"
+            + "<path d='M12.53 36h74.94M12.53 64h74.94'/>"
+            + "</svg>");
 }

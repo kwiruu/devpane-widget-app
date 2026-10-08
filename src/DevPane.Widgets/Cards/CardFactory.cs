@@ -9,13 +9,13 @@ internal static class CardFactory
 {
     public static CardBase? Create(WidgetContext context, string? customState) => context.DefinitionId switch
     {
-        SystemCard.DefinitionId => new SystemCard(context, customState),
-        LocalDevCard.DefinitionId => new LocalDevCard(context, customState),
-        GitHubCard.DefinitionId => new GitHubCard(context, customState),
-        ContributionsCard.DefinitionId => new ContributionsCard(context, customState),
-        ClaudeCard.DefinitionId => new ClaudeCard(context, customState),
-        VercelCard.DefinitionId => new VercelCard(context, customState),
-        JiraCard.DefinitionId => new JiraCard(context, customState),
+        SystemCard.DefinitionId => new SystemCard(context.Id, context.Size, customState),
+        LocalDevCard.DefinitionId => new LocalDevCard(context.Id, context.Size, customState),
+        GitHubCard.DefinitionId => new GitHubCard(context.Id, context.Size, customState),
+        ContributionsCard.DefinitionId => new ContributionsCard(context.Id, context.Size, customState),
+        ClaudeCard.DefinitionId => new ClaudeCard(context.Id, context.Size, customState),
+        VercelCard.DefinitionId => new VercelCard(context.Id, context.Size, customState),
+        JiraCard.DefinitionId => new JiraCard(context.Id, context.Size, customState),
         _ => null,
     };
 }

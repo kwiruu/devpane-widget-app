@@ -35,12 +35,25 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.4.0" />
+    <!--
+      The Microsoft.WindowsAppSDK metapackage pulls in WinUI, WebView2, Search and the Windows AI stack, whose
+      DirectML and ONNX Runtime binaries are ~47 MB of the package for all three architectures at once. Dev Pane
+      only calls Microsoft.Windows.Widgets, so it takes the Widgets package and the Runtime package (which
+      declares the Windows App Runtime framework dependency) instead of the metapackage that bundles the rest.
+      Add a package back here if a card starts using something else from the Windows App SDK.
+    -->
+    <PackageReference Include="Microsoft.WindowsAppSDK.Widgets" Version="2.0.5" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.Runtime" Version="2.4.0" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2705" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DevPane.Integrations\DevPane.Integrations.csproj" />
+  </ItemGroup>
+
+  <!-- The render-previews command and its made-up data are for tools\render-previews.ps1, not for the Store build. -->
+  <ItemGroup Condition="'$(Configuration)' != 'Debug'">
+    <Compile Remove="Previews\**" />
   </ItemGroup>
 
   <!-- Enables Visual Studio's package deployment and the Package and Publish menu. -->

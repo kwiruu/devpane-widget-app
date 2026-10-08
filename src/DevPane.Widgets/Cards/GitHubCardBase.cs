@@ -3,7 +3,6 @@ using System.Text.Json.Nodes;
 using DevPane.Integrations.GitHub;
 using DevPane.Widgets.GitHub;
 using Microsoft.Windows.Widgets;
-using Microsoft.Windows.Widgets.Providers;
 
 namespace DevPane.Widgets.Cards;
 
@@ -17,8 +16,8 @@ internal abstract class GitHubCardBase<TReading> : PollingCard<TReading>
     private volatile bool _refreshRequested;
     private volatile bool _refreshing;
 
-    protected GitHubCardBase(WidgetContext context, string? customState)
-        : base(context, customState)
+    protected GitHubCardBase(string id, WidgetSize size, string? customState)
+        : base(id, size, customState)
     {
         GitHubSession.Changed += OnSessionChanged;
     }

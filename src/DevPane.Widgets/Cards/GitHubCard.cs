@@ -4,7 +4,6 @@ using System.Text.RegularExpressions;
 using DevPane.Integrations.GitHub;
 using DevPane.Widgets.GitHub;
 using Microsoft.Windows.Widgets;
-using Microsoft.Windows.Widgets.Providers;
 
 namespace DevPane.Widgets.Cards;
 
@@ -42,8 +41,8 @@ internal sealed partial class GitHubCard : GitHubCardBase<GitHubCard.Reading>
     private string _customizeTyped = string.Empty;
     private IReadOnlyList<string> _recentRepositories = [];
 
-    public GitHubCard(WidgetContext context, string? customState)
-        : base(context, customState)
+    public GitHubCard(string id, WidgetSize size, string? customState)
+        : base(id, size, customState)
     {
         _repository = ReadRepository(customState);
     }
