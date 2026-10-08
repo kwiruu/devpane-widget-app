@@ -1,5 +1,5 @@
 using System.Text.Json.Nodes;
-using Microsoft.Windows.Widgets.Providers;
+using Microsoft.Windows.Widgets;
 
 namespace DevPane.Widgets.Cards;
 
@@ -15,8 +15,8 @@ internal abstract class PollingCard<TSnapshot> : CardBase
     private TSnapshot? _latest;
     private int _sampling;
 
-    protected PollingCard(WidgetContext context, string? customState)
-        : base(context, customState)
+    protected PollingCard(string id, WidgetSize size, string? customState)
+        : base(id, size, customState)
     {
     }
 
@@ -56,6 +56,15 @@ internal abstract class PollingCard<TSnapshot> : CardBase
         {
             _timer?.Dispose();
             _timer = null;
+        }
+    }
+
+    /// <summary>Shows <paramref name="snapshot"/> as if it had just been sampled. For drawing preview images.</summary>
+    internal void UseSample(TSnapshot snapshot)
+    {
+        lock (_gate)
+        {
+            _latest = snapshot;
         }
     }
 

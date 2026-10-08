@@ -22,8 +22,14 @@ if (repository is null)
     return 1;
 }
 
+// The card has a light and a dark icon. Task Manager's is full colour and reads on either board, so the same
+// image is written under both names, replacing both of Dev Pane's.
 string outputFolder = Path.Combine(repository, "src", "DevPane.Widgets", "Assets", "Local");
-string output = Path.Combine(outputFolder, "SystemStats_Icon.png");
+string[] outputs =
+[
+    Path.Combine(outputFolder, "SystemStats_Icon_Light.png"),
+    Path.Combine(outputFolder, "SystemStats_Icon_Dark.png"),
+];
 
 // Ask for the largest size so the downscaled result stays sharp.
 using Icon? icon = Icon.ExtractIcon(taskManager, 0, 256);
@@ -43,8 +49,13 @@ using (var graphics = Graphics.FromImage(result))
 }
 
 Directory.CreateDirectory(outputFolder);
-result.Save(output, ImageFormat.Png);
-Console.WriteLine($"Saved {output} ({source.Width}px source). Rebuild Dev Pane to use it.");
+foreach (string output in outputs)
+{
+    result.Save(output, ImageFormat.Png);
+    Console.WriteLine($"Saved {output} ({source.Width}px source).");
+}
+
+Console.WriteLine("Rebuild Dev Pane to use it.");
 return 0;
 
 static string? FindRepositoryRoot(string start)

@@ -10,10 +10,10 @@ internal abstract class CardBase : IDisposable
 {
     private static readonly Dictionary<string, string> TemplateCache = new();
 
-    protected CardBase(WidgetContext context, string? customState)
+    protected CardBase(string id, WidgetSize size, string? customState)
     {
-        Id = context.Id;
-        Size = context.Size;
+        Id = id;
+        Size = size;
         CustomState = customState ?? string.Empty;
     }
 
@@ -74,6 +74,9 @@ internal abstract class CardBase : IDisposable
 
         WidgetManager.GetDefault().UpdateWidget(options);
     }
+
+    /// <summary>The template and data this card would send, without sending them. For drawing preview images.</summary>
+    internal (string Template, string Data) Render() => (LoadTemplate(TemplateName), BuildData());
 
     public virtual void Dispose() => Deactivate();
 

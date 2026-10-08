@@ -37,6 +37,11 @@ internal static class GitHubSession
 
     static GitHubSession()
     {
+        if (PreviewMode.IsActive)
+        {
+            return;
+        }
+
         if (GitHubTokenStore.Load() is { } token)
         {
             _token = token;
@@ -52,6 +57,11 @@ internal static class GitHubSession
     {
         get
         {
+            if (PreviewMode.GitHub is { } preview)
+            {
+                return preview;
+            }
+
             lock (Gate)
             {
                 return new GitHubSessionView(_state, _pendingCode, _notice, _login);

@@ -2,7 +2,6 @@ using System.Globalization;
 using System.Text.Json.Nodes;
 using DevPane.Integrations.Claude;
 using Microsoft.Windows.Widgets;
-using Microsoft.Windows.Widgets.Providers;
 
 namespace DevPane.Widgets.Cards;
 
@@ -34,8 +33,8 @@ internal sealed class ClaudeCard : PollingCard<ClaudeUsageSummary>
     private string? _setupMessage;
     private DateTimeOffset _setupMessageAt;
 
-    public ClaudeCard(WidgetContext context, string? customState)
-        : base(context, customState)
+    public ClaudeCard(string id, WidgetSize size, string? customState)
+        : base(id, size, customState)
     {
     }
 

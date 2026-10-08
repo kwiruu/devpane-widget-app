@@ -12,6 +12,11 @@ internal static class WindowsTheme
 
     public static bool IsLight()
     {
+        if (PreviewMode.IsActive)
+        {
+            return PreviewMode.Light;
+        }
+
         try
         {
             using var key = Registry.CurrentUser.OpenSubKey(PersonalizeKey);

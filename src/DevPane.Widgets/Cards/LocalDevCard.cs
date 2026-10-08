@@ -2,7 +2,6 @@ using System.Globalization;
 using System.Text.Json.Nodes;
 using DevPane.Integrations.LocalDev;
 using Microsoft.Windows.Widgets;
-using Microsoft.Windows.Widgets.Providers;
 
 namespace DevPane.Widgets.Cards;
 
@@ -20,8 +19,8 @@ internal sealed class LocalDevCard : PollingCard<LocalDevSnapshot>
     private const int RowHeightWithUrl = 46;
     private const int RowHeightPortOnly = 30;
 
-    public LocalDevCard(WidgetContext context, string? customState)
-        : base(context, customState)
+    public LocalDevCard(string id, WidgetSize size, string? customState)
+        : base(id, size, customState)
     {
     }
 

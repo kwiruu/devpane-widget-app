@@ -25,6 +25,11 @@ internal static class VercelSession
 
     static VercelSession()
     {
+        if (PreviewMode.IsActive)
+        {
+            return;
+        }
+
         if (TokenVault.Vercel.Load() is { } token)
         {
             _client = new VercelClient(token);
@@ -50,6 +55,11 @@ internal static class VercelSession
     {
         get
         {
+            if (PreviewMode.Vercel is { } preview)
+            {
+                return preview;
+            }
+
             lock (Gate)
             {
                 return new VercelSessionView(_state, _notice);

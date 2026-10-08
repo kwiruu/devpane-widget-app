@@ -20,6 +20,16 @@ if (args is [ClaudeStatusLine.CommandArgument])
     return;
 }
 
+#if DEBUG
+// tools\render-previews.ps1 runs "DevPane.Widgets.exe render-previews <folder>" to draw the widget picker's previews
+// from the cards' own code. Debug builds only; the Store build doesn't have this command.
+if (args is [DevPane.Widgets.Previews.PreviewRenderer.CommandArgument, var previewFolder])
+{
+    Environment.ExitCode = DevPane.Widgets.Previews.PreviewRenderer.Run(previewFolder);
+    return;
+}
+#endif
+
 WinRT.ComWrappersSupport.InitializeComWrappers();
 
 AppDomain.CurrentDomain.UnhandledException += (_, e) =>

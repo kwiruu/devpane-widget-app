@@ -28,6 +28,11 @@ internal static class JiraSession
 
     static JiraSession()
     {
+        if (PreviewMode.IsActive)
+        {
+            return;
+        }
+
         if (Load() is { } connection)
         {
             _client = new JiraClient(connection);
@@ -42,6 +47,11 @@ internal static class JiraSession
     {
         get
         {
+            if (PreviewMode.JiraClient is { } preview)
+            {
+                return preview;
+            }
+
             lock (Gate)
             {
                 return _client;
@@ -53,6 +63,11 @@ internal static class JiraSession
     {
         get
         {
+            if (PreviewMode.Jira is { } preview)
+            {
+                return preview;
+            }
+
             lock (Gate)
             {
                 return new JiraSessionView(_state, _notice, _client?.Connection.Site);

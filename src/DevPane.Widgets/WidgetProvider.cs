@@ -32,7 +32,8 @@ internal sealed partial class WidgetProvider : IWidgetProvider, IWidgetProvider2
             Guard("restore", () =>
             {
                 // Cards pinned before this process started (after a restart or crash).
-                foreach (var info in WidgetManager.GetDefault().GetWidgetInfos())
+                // GetWidgetInfos returns null, not an empty array, when nothing is pinned yet.
+                foreach (var info in WidgetManager.GetDefault().GetWidgetInfos() ?? [])
                 {
                     var context = info.WidgetContext;
                     if (CardFactory.Create(context, info.CustomState) is { } card)

@@ -3,7 +3,6 @@ using System.Text.Json.Nodes;
 using DevPane.Integrations.GitHub;
 using DevPane.Widgets.GitHub;
 using Microsoft.Windows.Widgets;
-using Microsoft.Windows.Widgets.Providers;
 
 namespace DevPane.Widgets.Cards;
 
@@ -27,8 +26,8 @@ internal sealed class ContributionsCard : GitHubCardBase<ContributionsCard.Readi
     // Contributions change slowly; reopening the board within this window reuses the last result.
     private static readonly TimeSpan MinimumRefreshAge = TimeSpan.FromMinutes(10);
 
-    public ContributionsCard(WidgetContext context, string? customState)
-        : base(context, customState)
+    public ContributionsCard(string id, WidgetSize size, string? customState)
+        : base(id, size, customState)
     {
     }
 

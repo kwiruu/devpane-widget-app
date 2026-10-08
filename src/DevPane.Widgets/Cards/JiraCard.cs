@@ -4,7 +4,6 @@ using System.Text.Json.Nodes;
 using DevPane.Integrations.Jira;
 using DevPane.Widgets.Jira;
 using Microsoft.Windows.Widgets;
-using Microsoft.Windows.Widgets.Providers;
 
 namespace DevPane.Widgets.Cards;
 
@@ -42,8 +41,8 @@ internal sealed class JiraCard : PollingCard<JiraCard.Reading>
     private bool _customizing;
     private IReadOnlyList<JiraProject>? _projects;
 
-    public JiraCard(WidgetContext context, string? customState)
-        : base(context, customState)
+    public JiraCard(string id, WidgetSize size, string? customState)
+        : base(id, size, customState)
     {
         _filter = Filter.Read(customState);
         JiraSession.Changed += OnSessionChanged;
@@ -286,6 +285,7 @@ internal sealed class JiraCard : PollingCard<JiraCard.Reading>
         var open = issues.Where(issue => issue.Category != JiraStatusCategory.Done).ToList();
         bool IsDueSoon(JiraIssue issue) => issue.Category != JiraStatusCategory.Done && issue.DueDate is { } due && due <= today.AddDays(DueSoonDays);
         bool IsOverdue(JiraIssue issue) => issue.Category != JiraStatusCategory.Done && issue.DueDate is { } due && due < today;
+        bool hasOverdue = issues.Any(IsOverdue);
 
         data["tiles"] = new JsonArray
         {
@@ -293,8 +293,11 @@ internal sealed class JiraCard : PollingCard<JiraCard.Reading>
                 client.SearchUrl(filter.Jql), light),
             Tile("In progress", issues.Count(issue => issue.Category == JiraStatusCategory.InProgress), more, LabelTone.Accent,
                 client.SearchUrl(filter.Jql), light),
-            Tile(issues.Any(IsOverdue) ? "Overdue" : "Due soon", issues.Count(IsDueSoon), more,
-                issues.Any(IsOverdue) ? LabelTone.Danger : LabelTone.Attention, client.SearchUrl(filter.Jql), light),
+            // Once anything is overdue the tile counts only what's overdue, so its number matches its label.
+            // Due soon includes overdue issues, so counting that under an "Overdue" label would overstate it.
+            hasOverdue
+                ? Tile("Overdue", issues.Count(IsOverdue), more, LabelTone.Danger, client.SearchUrl(filter.Jql), light)
+                : Tile("Due soon", issues.Count(IsDueSoon), more, LabelTone.Attention, client.SearchUrl(filter.Jql), light),
         };
 
         int rows = Size switch
