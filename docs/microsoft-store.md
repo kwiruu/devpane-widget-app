@@ -96,55 +96,50 @@ gives Partner Center crash reports. Add **Desktop development with C++** in the 
 
 ### Run the certification kit first
 
-The Windows App Certification Kit runs most of the tests certification runs, on this PC, in about ten minutes.
-Finding a problem here instead of after a submission saves a review cycle.
-
-Point it at the **package file** that `tools\pack-store.ps1` builds, not at the copy `tools\deploy-dev.ps1`
-installs. The dev script registers a folder of loose files in development mode, and the kit can't read one of
-those: it reports "The manifest file for this app package could not be found" and then fails every test it
-never ran, which looks alarming and means nothing.
-
-Build the package first, then run both lines in a PowerShell started with **Run as administrator** — the kit
-won't start without it, and the first line clears any earlier run:
+The Windows App Certification Kit runs most of the tests certification runs, on this PC, in a few minutes.
+Finding a problem here instead of after a submission saves a review cycle. Build the package, then run the
+kit through its script:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File tools\pack-store.ps1
 ```
 
 ```powershell
-& "${env:ProgramFiles(x86)}\Windows Kits\10\App Certification Kit\appcert.exe" reset
+powershell -ExecutionPolicy Bypass -File tools\run-certification-kit.ps1
 ```
 
-```powershell
-& "${env:ProgramFiles(x86)}\Windows Kits\10\App Certification Kit\appcert.exe" test -appxpackagepath (Get-ChildItem "$HOME\Documents\DevPane\AppPackages" -Recurse -Filter *.msixbundle).FullName -reportoutputpath "$env:TEMP\devpane-wack.xml"
-```
+Run it from a normal PowerShell. It asks for administrator rights once, waits for the kit to finish, and prints
+the result and every test that didn't pass, with the kit's reason, in the same window.
 
-The path is spelled out because an administrator PowerShell starts in `C:\WINDOWS\system32`, not in the
-repository; change it if the repository lives somewhere else.
+It's a script rather than a couple of `appcert.exe` commands because the obvious commands all quietly test
+nothing:
 
-It takes about ten minutes and leaves the screen alone while it works. When it finishes, read the report:
+- **Pointing the kit at the copy `tools\deploy-dev.ps1` installs** fails every test. That copy is a
+  development-mode registration of a folder, and the kit can't find its manifest. It reports "The manifest
+  file for this app package could not be found", then marks each test it never ran as failed.
+- **Pointing it at the package file** stops after a few seconds without a report. To test a packaged desktop
+  app the kit has to install it, and the Store package is unsigned.
+- **Running `appcert.exe` from a normal shell** returns immediately. Windows elevates the kit in a window of its
+  own that PowerShell doesn't wait for, so its messages disappear and the report you read next is an old one.
 
-```powershell
-([xml](Get-Content "$env:TEMP\devpane-wack.xml")).REPORT.OVERALL_RESULT
-```
+The script works around all three. It makes a test copy of the x64 package with the OID Windows requires of
+unsigned packages added to the publisher, installs it for all users (unsigned packages that contain programs
+can only be installed that way, hence the administrator prompt), tests it, and uninstalls it again. Nothing is
+added to the certificate store, and the OID keeps the copy from ever replacing your own Dev Pane install. Each
+run deletes the previous report first and checks that the kit actually opened the package, so an old or empty
+report can't pass for a result.
 
-`PASS` means certification's automated tests should pass too. For anything else, list what actually failed
-rather than reading the XML by hand:
+**What to expect.** Dev Pane 1.0.0.0 comes out as **WARNING**, which passes: 22 of 24 tests pass, and the
+other two don't block certification.
 
-```powershell
-([xml](Get-Content "$env:TEMP\devpane-wack.xml")).SelectNodes('//TEST') | Where-Object { $_.RESULT.InnerText -ne 'PASS' } | ForEach-Object { '{0,-8} {1}' -f $_.RESULT.InnerText, $_.NAME }
-```
+- **Blocked executables** fails, but it's optional and both hits are false positives. `ShellExecuteW` in
+  `DevPane.Widgets.exe` belongs to the .NET app launcher every .NET app ships, which uses it to open the
+  download page when .NET is missing. "CDb", "ReG" and "DnX" are fragments of names inside Microsoft's
+  `Microsoft.Windows.SDK.NET.dll` that happen to match the blocked tools `cdb`, `reg` and `dnx`.
+- **DPI awareness** is a warning. `DevPane.Widgets.exe` doesn't declare DPI awareness, which has no effect
+  on a provider with no window.
 
-Check the report's `APP_NAME` before believing a long list of failures. If it's empty, the kit never opened the
-package and every failure below it is that one problem:
-
-```powershell
-([xml](Get-Content "$env:TEMP\devpane-wack.xml")).REPORT.APP_NAME
-```
-
-The package `pack-store.ps1` builds is unsigned, because that's what the Store wants. If the kit refuses to
-open it for that reason, the choice is to sign a copy locally just for testing, or to skip the kit and let
-Store certification be the check — it runs the same tests.
+Anything beyond those two is new and worth reading.
 
 ## 5. Fill in the submission
 
