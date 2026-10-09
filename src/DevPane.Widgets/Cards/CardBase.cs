@@ -8,7 +8,7 @@ namespace DevPane.Widgets.Cards;
 /// </summary>
 internal abstract class CardBase : IDisposable
 {
-    private static readonly Dictionary<string, string> TemplateCache = new();
+    private static readonly Dictionary<string, Template> TemplateCache = new();
 
     protected CardBase(string id, WidgetSize size, string? customState)
     {
@@ -61,36 +61,46 @@ internal abstract class CardBase : IDisposable
 
     public void Push(bool includeTemplate)
     {
+        var (template, data) = Render();
         var options = new WidgetUpdateRequestOptions(Id)
         {
-            Data = BuildData(),
+            Data = data,
             CustomState = CustomState,
         };
 
         if (includeTemplate)
         {
-            options.Template = LoadTemplate(TemplateName);
+            options.Template = template;
         }
 
         WidgetManager.GetDefault().UpdateWidget(options);
     }
 
-    /// <summary>The template and data this card would send, without sending them. For drawing preview images.</summary>
-    internal (string Template, string Data) Render() => (LoadTemplate(TemplateName), BuildData());
+    /// <summary>The template and data this card would send, without sending them. Also draws the preview images.</summary>
+    internal (string Template, string Data) Render()
+    {
+        string data = BuildData();
+        var template = LoadTemplate(TemplateName);
+        return (template.Json, CardSanitizer.Clean(data, template.Fields));
+    }
 
     public virtual void Dispose() => Deactivate();
 
-    private static string LoadTemplate(string name)
+    private static Template LoadTemplate(string name)
     {
         lock (TemplateCache)
         {
-            if (!TemplateCache.TryGetValue(name, out string? template))
+            if (!TemplateCache.TryGetValue(name, out var template))
             {
-                template = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Templates", name + ".json"));
+                string json = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Templates", name + ".json"));
+                template = new Template(json, CardSanitizer.FindFields(json));
                 TemplateCache[name] = template;
             }
 
             return template;
         }
     }
+
+    /// <param name="Fields">What <see cref="CardSanitizer"/> checks in the data sent with this template.</param>
+    private sealed record Template(string Json, TemplateFields Fields);
 }
