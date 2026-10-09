@@ -71,7 +71,8 @@ at.
 
 Dev Pane runs entirely on your PC: no account, no server, no analytics. Tokens live in Windows Credential
 Locker, and the only network calls go straight from your PC to GitHub, Vercel or Jira when you pin those cards.
-[PRIVACY.md](PRIVACY.md) has the details, including exactly what the GitHub sign-in grants.
+[PRIVACY.md](PRIVACY.md) has the details, including exactly what the GitHub sign-in grants. To report a
+security problem, see [SECURITY.md](SECURITY.md).
 
 ## License
 
