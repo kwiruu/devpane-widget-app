@@ -152,9 +152,9 @@ the whole flow end to end.
 **Properties.**
 
 - Category: **Developer tools**.
-- Privacy policy URL: **required**, because Dev Pane signs in to GitHub, Vercel and Jira accounts. Publish
-  [PRIVACY.md](../PRIVACY.md) somewhere public and link it. The raw GitHub URL works, but a GitHub Pages URL
-  reads better to a reviewer.
+- Privacy policy URL: **required**, because Dev Pane signs in to GitHub, Vercel and Jira accounts. Use
+  **https://devpane.vercel.app/privacy**, the website's copy of [PRIVACY.md](../PRIVACY.md). It's a short address
+  that keeps working if the docs move, and the two copies hold the same text: change both together.
 - Support contact info: an email address or issues URL that a person actually reads.
 
 **Age ratings.** A questionnaire. Dev Pane has no ads, no user-generated content, and no data sharing, which
